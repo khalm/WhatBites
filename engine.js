@@ -12,6 +12,10 @@
    * Based on common angling guidance (e.g. Academy Sports lure colour chart, Minnesota DNR "Lure colors"):
    *  - clear water + sun: natural colours, silver/chrome flash, translucent
    *  - stained/brown water + overcast: gold, copper, chartreuse, orange
+   *  - overcast also: "dark day, dark lure" — black/purple give a sharp silhouette against the grey sky.
+   *    Two ways to be seen (colour vs outline), so both groups score well. Silver needs sun to flash.
+   *  - colour matters less than size, shape and action (Minnesota DNR), and fish are less wary on
+   *    grey days, so colour counts a bit less when it's overcast
    *  - murky water: high visibility and contrast — chartreuse, white, orange, black
    *  - dusk/dawn: chartreuse, gold, dark silhouettes
    *  - night: black/dark purple silhouette, glow
@@ -32,20 +36,20 @@
   const C = (clear, stained, murky, sun, overcast, low, night, deep, sea) => ({ clear, stained, murky, sun, overcast, low, night, deep, sea });
   const COLOR_FIT = {
     //                clear stained murky  sun  overc  dusk  night  deep   sea
-    silver:     C( 0.8,  0.2, -0.2,  0.9,  0.0, -0.2, -0.6,  0.2,  0.5),
+    silver:     C( 0.8,  0.2, -0.2,  0.9, -0.3, -0.2, -0.6,  0.2,  0.5),
     gold:       C( 0.1,  0.8,  0.5,  0.3,  0.8,  0.5, -0.2,  0.0,  0.0),
     copper:     C(-0.1,  0.9,  0.4,  0.0,  0.7,  0.4, -0.3, -0.2,  0.1),
-    white:      C( 0.3,  0.3,  0.6,  0.3,  0.4,  0.5,  0.3,  0.3,  0.4),
+    white:      C( 0.3,  0.3,  0.6,  0.4,  0.3,  0.5,  0.3,  0.3,  0.4),
     red:        C( 0.2,  0.4,  0.2,  0.1,  0.3,  0.0, -0.3, -0.6,  0.2),
     orange:     C(-0.3,  0.6,  0.8,  0.0,  0.5,  0.4, -0.2, -0.4,  0.0),
     yellow:     C(-0.3,  0.5,  0.7,  0.0,  0.4,  0.4, -0.1, -0.1,  0.0),
-    chartreuse: C(-0.4,  0.7,  1.0, -0.1,  0.6,  0.7,  0.2,  0.4,  0.1),
+    chartreuse: C(-0.4,  0.7,  1.0,  0.0,  0.6,  0.7,  0.2,  0.4,  0.1),
     green:      C( 0.4,  0.2, -0.1,  0.3,  0.1, -0.1, -0.4,  0.4,  0.1),
     blue:       C( 0.6, -0.2, -0.4,  0.5, -0.1, -0.3, -0.4,  0.4,  0.4),
     pink:       C(-0.1,  0.3,  0.5,  0.0,  0.3,  0.2, -0.3, -0.3,  0.3),
-    purple:     C( 0.0,  0.1,  0.3, -0.2,  0.1,  0.4,  0.7,  0.1,  0.0),
-    black:      C( 0.0,  0.2,  0.5, -0.4,  0.1,  0.6,  1.0,  0.0,  0.0),
-    natural:    C( 0.9,  0.0, -0.6,  0.6,  0.0, -0.4, -0.6,  0.0,  0.1),
+    purple:     C( 0.0,  0.1,  0.3, -0.2,  0.6,  0.4,  0.7,  0.1,  0.0),
+    black:      C( 0.0,  0.2,  0.5, -0.4,  0.8,  0.6,  1.0,  0.0,  0.0),
+    natural:    C( 0.9,  0.0, -0.6,  0.6, -0.2, -0.4, -0.6,  0.0,  0.1),
     glow:       C(-0.6,  0.0,  0.4, -0.8, -0.2,  0.4,  1.0,  0.6,  0.3),
   };
   // Why a colour is good, per condition (shown to the user)
@@ -54,7 +58,11 @@
     stained: { _: ['gull/kobber/chartreuse synes godt i brunt vann', 'gold/copper/chartreuse show up in stained water'] },
     murky: { black: ['mørk silhuett synes i grumsete vann', 'dark silhouette shows in murky water'], _: ['sterk farge synes i grumsete vann', 'high-visibility colour for murky water'] },
     sun: { silver: ['sølv blinker i sola', 'silver flashes in sunshine'], natural: ['naturlig farge i sterkt lys', 'natural colour in bright light'], _: ['passer i sterkt lys', 'suits bright light'] },
-    overcast: { _: ['lyser opp i gråvær', 'stands out on a dull day'] },
+    overcast: {
+      black: ['mørk silhuett mot gråværshimmelen', 'dark silhouette against a grey sky'],
+      purple: ['mørk silhuett mot gråværshimmelen', 'dark silhouette against a grey sky'],
+      _: ['lyser opp i gråvær', 'stands out on a dull day'],
+    },
     low: { black: ['mørk silhuett i skumringen', 'dark silhouette at dusk'], _: ['synlig i skumringen', 'visible at dusk'] },
     night: { glow: ['selvlysende synes i mørket', 'glow is visible in the dark'], _: ['mørk silhuett mot overflaten om natta', 'dark silhouette against the surface at night'] },
     deep: { _: ['fargen holder seg synlig i dypet', 'colour stays visible at depth'] },
@@ -247,7 +255,7 @@
   function colorFit(color, env, deep) {
     const f = COLOR_FIT[LEGACY[color] || color] || COLOR_FIT.natural;
     // The darker it is, the more light decides and the less water clarity does
-    const wl = env.light === 'night' ? 0.75 : env.light === 'low' ? 0.6 : 0.45;
+    const wl = env.light === 'night' ? 0.75 : env.light === 'low' ? 0.6 : env.light === 'overcast' ? 0.55 : 0.45;
     let v = (1 - wl) * (f[env.clarity] ?? 0) + wl * (f[env.light] ?? 0);
     if (deep) v = 0.75 * v + 0.25 * f.deep;
     if (env.water === 'sea') v += 0.15 * f.sea;
@@ -260,7 +268,8 @@
     const c2 = b.color2 ? (LEGACY[b.color2] || b.color2) : null;
     let fit = colorFit(c1, env, deep);
     if (c2 && c2 !== c1) fit = 0.7 * fit + 0.3 * Math.max(fit, colorFit(c2, env, deep)) + 0.05; // contrast helps a little
-    let points = fit * 22;
+    // Fish are less picky on grey days → colour counts a bit less
+    let points = fit * (env.light === 'overcast' ? 18 : 22);
     // species favourites
     let favWho = null;
     for (const t of targets) {

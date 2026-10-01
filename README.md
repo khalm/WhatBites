@@ -30,6 +30,8 @@ Ingen konto, ingen nøkkel, ingen kostnad. All bildeanalyse skjer **på telefone
 Appen leser fargen på hvert agn (sølv, gull, kobber, hvit, rød, oransje, gul, chartreuse, grønn, blå, rosa, lilla, svart, naturfarge, selvlysende) og bruker vanlige fargeregler:
 - **Klart vann + sol:** naturlige farger og sølv
 - **Brunt/farget vann + gråvær:** gull, kobber, chartreuse, oransje
+- **Gråvær:** også mørke farger (svart, lilla) — «mørk dag, mørkt agn» gir skarp silhuett mot himmelen. Sølv trenger sol for å blinke.
+- Farge betyr mindre enn størrelse, form og gange — og fisken er mindre sky i gråvær, så fargen teller litt mindre da.
 - **Grumsete vann:** sterke farger og kontrast — chartreuse, oransje, hvit, svart
 - **Skumring:** chartreuse, gull, mørke silhuetter
 - **Natt:** svart/lilla silhuett eller selvlysende
