@@ -1,12 +1,12 @@
-// Caches the app shell so it opens instantly; live data (weather, fish, AI) always goes to the network.
-const CACHE = 'whatbites-v3';
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'engine.js', 'vision.js', 'manifest.json', 'icon.svg', 'icon-192.png'];
-self.addEventListener('install', (e) => e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting())));
+// Network first (always fresh after an update), cache as offline fallback.
+const CACHE = 'whatbites-v4';
+self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(
   caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
-  e.respondWith(fetch(e.request).then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); return r; })
+  e.respondWith(fetch(e.request, { cache: 'no-cache' })
+    .then((r) => { const copy = r.clone(); caches.open(CACHE).then((c) => c.put(e.request, copy)); return r; })
     .catch(() => caches.match(e.request)));
 });
