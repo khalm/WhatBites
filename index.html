@@ -12,15 +12,24 @@
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <header class="top">
     <div class="brand"><img src="icon.svg" alt="" width="32" height="32"><h1>WhatBites</h1></div>
-    <button id="langBtn" class="icon-btn lang" aria-label="Language">EN</button>
+    <button id="langBtn" class="icon-btn lang" aria-label="Language"><span class="flag" id="langFlag">🇬🇧</span><span id="langCode">EN</span></button>
   </header>
 
   <main>
+    <section class="card banner hidden" id="modelBanner">
+      <p><b data-i18n="bannerTitle"></b><br><span class="muted" id="bannerText"></span></p>
+      <div class="bar hidden" id="bannerBar"><div id="bannerFill"></div></div>
+      <div class="row">
+        <button class="btn ghost" id="bannerLater" data-i18n="later"></button>
+        <button class="btn primary" id="bannerGo" data-i18n="downloadNow"></button>
+      </div>
+    </section>
+
     <section class="card" id="step1">
       <div class="step-head"><span class="num">1</span><h2 data-i18n="s1title"></h2></div>
       <p class="muted" id="condStatus" data-i18n="s1intro"></p>
@@ -29,6 +38,8 @@
         <div class="place" id="placeName"></div>
         <div class="grid" id="weatherGrid"></div>
         <h3 data-i18n="fishNearby"></h3>
+        <p class="tiny muted" data-i18n="fishTap"></p>
+        <div id="prefLine" class="pref hidden"></div>
         <div class="chips" id="fishList"></div>
         <p class="tiny muted" data-i18n="fishSource"></p>
       </div>
@@ -41,6 +52,7 @@
         <input type="file" accept="image/*" capture="environment" id="envInput" hidden>
       </label>
       <img id="envPreview" class="preview hidden" alt="">
+      <p id="darkNote" class="note hidden"></p>
       <h3 data-i18n="water"></h3><div class="seg" data-group="water"></div>
       <h3 data-i18n="clarity"></h3><div class="seg" data-group="clarity"></div>
       <h3 data-i18n="light"></h3><div class="seg" data-group="light"></div>
@@ -64,8 +76,19 @@
   <div id="busy" class="busy hidden"><div class="spinner"></div><p id="busyText"></p>
     <div class="bar hidden" id="busyBar"><div id="busyFill"></div></div></div>
 
-  <script src="engine.js?v=4"></script>
-  <script src="vision.js?v=4"></script>
-  <script src="app.js?v=4"></script>
+  <dialog id="sheet">
+    <div class="sheet-img" id="sheetImgWrap"><img id="sheetImg" alt=""></div>
+    <h2 id="sheetTitle"></h2>
+    <p class="muted"><i id="sheetSci"></i></p>
+    <p id="sheetText"></p>
+    <p id="sheetSize" class="muted"></p>
+    <button class="btn primary" id="sheetPick"></button>
+    <a class="btn ghost" id="sheetWiki" target="_blank" rel="noopener"></a>
+    <button class="btn ghost" id="sheetClose" data-i18n="close"></button>
+  </dialog>
+
+  <script src="engine.js?v=5"></script>
+  <script src="vision.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

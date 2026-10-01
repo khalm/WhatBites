@@ -109,6 +109,8 @@
     const all = stats(pixels(img));
     const sky = stats(pixels(img, 0, 0, 1, 0.3));
     const water = stats(pixels(img, 0, 0.55, 1, 1));
+    // Too dark to say anything useful about the water — let the user choose
+    if (all.val < 0.15) return { tooDark: true, light: 'night', clarity: null };
     let light;
     if (all.val < 0.3) light = 'low';
     else if (sky.val > 0.6 && sky.sat < 0.18) light = 'overcast';
@@ -119,7 +121,7 @@
     if (brownish && water.sat > 0.25) clarity = 'murky';
     else if (brownish || (water.contrast < 0.08 && water.val > 0.45)) clarity = 'stained';
     else clarity = 'clear';
-    return { light, clarity };
+    return { tooDark: false, light, clarity };
   }
 
   /** Colour class of a bait inside its box (centre area, to skip the box background). */

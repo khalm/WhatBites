@@ -72,7 +72,13 @@
   }
 
   /** Choose up to 3 target species with weights summing to 1. */
-  function pickTargets(fishList, water) {
+  // Used when the user picks a species we have no profile for
+  const GENERIC = { no: '', en: '', habitat: 'b', pref: { spoon: 0.6, spinner: 0.6, wobbler: 0.6, softbait: 0.6, jig: 0.5, fly: 0.5, worm: 0.7 } };
+
+  function pickTargets(fishList, water, preferred) {
+    if (preferred && preferred.length) {
+      return preferred.map((key) => ({ key, w: 1 / preferred.length, sp: SPECIES[key] || { ...GENERIC, no: key, en: key } }));
+    }
     const cand = (fishList || [])
       .filter((f) => SPECIES[f.name] && habitatOk(SPECIES[f.name], water))
       .map((f) => ({ key: f.name, w: Math.log(1 + f.count) * (gameWeight(f.name)) }))
@@ -98,14 +104,14 @@
    * env:   {water: lake|river|sea, clarity: clear|stained|murky, light: sun|overcast|low}
    * wx:    weather object from app (temp, wind, pressureTrend, isDay, month index)
    */
-  function rank(baits, env, wx, fishList, lang = 'no') {
+  function rank(baits, env, wx, fishList, lang = 'no', preferred = []) {
     const L = lang === 'no' ? 0 : 1;
-    const targets = pickTargets(fishList, env.water);
+    const targets = pickTargets(fishList, env.water, preferred);
     const month = wx?.monthIndex ?? new Date().getMonth();
     const cold = (wx && wx.temp < 6) || [10, 11, 0, 1, 2].includes(month);
     const warm = wx && wx.temp > 16;
     const windy = wx && wx.wind > 8;
-    const night = wx && !wx.isDay;
+    const night = env.light === 'night';
     const low = env.light === 'low' || env.light === 'overcast' || night;
 
     const scored = baits.map((b) => {
@@ -127,6 +133,11 @@
         if (b.type === 'fly' && !isSeaWater(env.water)) add(4);
       }
       // Light
+      if (night) {
+        if (b.type === 'wobbler' || b.type === 'spinner') add(6, 'gir vibrasjon i mørket', 'vibration helps fish find it in the dark');
+        if (b.type === 'worm') add(5, 'lukt hjelper om natta', 'scent helps at night');
+        if (b.type === 'fly' || b.type === 'spoon') add(-3);
+      }
       if (low) {
         if (b.color === 'dark') add(6, 'mørk silhuett i lite lys', 'dark silhouette in low light');
         if (b.color === 'gold' || b.color === 'bright') add(4, 'synlig i lite lys', 'visible in low light');
@@ -156,7 +167,63 @@
       return { ...b, score: Math.max(0, Math.min(100, Math.round(s + 15))), why: why.slice(0, 3) };
     });
     scored.sort((a, b) => b.score - a.score);
-    return { baits: scored, targets, tip: scored[0] ? howTo(scored[0].type, env, cold, lang) : '' };
+    const top = scored[0];
+    return {
+      baits: scored, targets,
+      tip: top ? howTo(top.type, env, cold, lang) : '',
+      size: top ? sizeFor(top.type, targets, env, windy || cold, lang) : '',
+    };
+  }
+
+  // Typical bait size per species: lure weight (g), lure length (cm), hook size, fly size
+  const SIZES = {
+    'Esox lucius': { g: [15, 40], cm: [10, 20], hook: '1/0–4/0', fly: '2/0–4/0' },
+    'Perca fluviatilis': { g: [3, 10], cm: [3, 7], hook: '6–10', fly: '8–12' },
+    'Salmo trutta': { g: [5, 15], cm: [4, 8], hook: '6–10', fly: '10–16', sea: { g: [15, 25], cm: [6, 10], hook: '2–6', fly: '4–8' } },
+    'Salmo salar': { g: [15, 30], cm: [7, 12], hook: '2–6', fly: '4–10' },
+    'Oncorhynchus mykiss': { g: [5, 15], cm: [4, 8], hook: '6–10', fly: '10–14' },
+    'Salvelinus alpinus': { g: [5, 12], cm: [3, 6], hook: '8–12', fly: '12–16' },
+    'Thymallus thymallus': { g: [2, 6], cm: [2, 4], hook: '10–14', fly: '14–18' },
+    'Sander lucioperca': { g: [10, 25], cm: [8, 12], hook: '1–2/0', fly: '1/0–2/0' },
+    'Coregonus lavaretus': { g: [2, 6], cm: [2, 4], hook: '12–16', fly: '14–18' },
+    'Lota lota': { g: [15, 30], cm: [6, 10], hook: '1–4', fly: '-' },
+    'Anguilla anguilla': { g: [10, 30], cm: [5, 10], hook: '2–6', fly: '-' },
+    'Rutilus rutilus': { g: [1, 4], cm: [2, 3], hook: '14–18', fly: '16–18' },
+    'Abramis brama': { g: [1, 5], cm: [2, 4], hook: '12–16', fly: '-' },
+    'Tinca tinca': { g: [1, 5], cm: [2, 4], hook: '10–14', fly: '-' },
+    'Carassius carassius': { g: [1, 4], cm: [2, 3], hook: '14–18', fly: '-' },
+    'Cyprinus carpio': { g: [5, 15], cm: [3, 5], hook: '4–8', fly: '-' },
+    'Leuciscus idus': { g: [3, 8], cm: [3, 6], hook: '8–12', fly: '10–14' },
+    'Squalius cephalus': { g: [3, 10], cm: [3, 6], hook: '6–10', fly: '8–12' },
+    'Gadus morhua': { g: [30, 120], cm: [10, 20], hook: '2/0–6/0', fly: '2/0' },
+    'Pollachius virens': { g: [20, 80], cm: [8, 15], hook: '1/0–4/0', fly: '1/0–2/0' },
+    'Pollachius pollachius': { g: [20, 60], cm: [8, 15], hook: '1/0–4/0', fly: '1/0–2/0' },
+    'Melanogrammus aeglefinus': { g: [60, 200], cm: [8, 12], hook: '2–1/0', fly: '-' },
+    'Molva molva': { g: [150, 400], cm: [15, 25], hook: '6/0–10/0', fly: '-' },
+    'Scomber scombrus': { g: [20, 40], cm: [5, 8], hook: '4–8', fly: '4–8' },
+    'Dicentrarchus labrax': { g: [15, 30], cm: [10, 15], hook: '1–2/0', fly: '1/0–2/0' },
+    'Labrus bergylta': { g: [10, 25], cm: [5, 10], hook: '1–4', fly: '-' },
+    'Platichthys flesus': { g: [30, 60], cm: [4, 6], hook: '4–8', fly: '-' },
+    'Pleuronectes platessa': { g: [30, 60], cm: [4, 6], hook: '4–8', fly: '-' },
+    'Belone belone': { g: [10, 25], cm: [5, 8], hook: '4–8', fly: '4–8' },
+    'Sebastes norvegicus': { g: [100, 300], cm: [10, 15], hook: '2/0–4/0', fly: '-' },
+    'Anarhichas lupus': { g: [100, 300], cm: [10, 20], hook: '4/0–6/0', fly: '-' },
+  };
+
+  /** Size/weight advice for the chosen bait type, for the target that suits it best. */
+  function sizeFor(type, targets, env, heavier, lang) {
+    const no = lang === 'no';
+    const t = targets.filter((x) => SIZES[x.key])
+      .sort((a, b) => (b.sp.pref[type] * b.w) - (a.sp.pref[type] * a.w))[0];
+    if (!t) return '';
+    let z = SIZES[t.key];
+    if (z.sea && env.water === 'sea') z = z.sea;
+    const who = (no ? t.sp.no : t.sp.en).toLowerCase();
+    if (type === 'fly') return z.fly === '-' ? '' : (no ? `Flue str. ${z.fly} for ${who}.` : `Fly size ${z.fly} for ${who}.`);
+    if (type === 'worm') return no ? `Krok str. ${z.hook} for ${who}.` : `Hook size ${z.hook} for ${who}.`;
+    const extra = heavier ? (no ? ' Velg øvre del i vind, kulde eller dypt vann.' : ' Go to the upper end in wind, cold or deep water.') : '';
+    return no ? `${z.g[0]}–${z.g[1]} g, ${z.cm[0]}–${z.cm[1]} cm for ${who}.${extra}`
+      : `${z.g[0]}–${z.g[1]} g, ${z.cm[0]}–${z.cm[1]} cm for ${who}.${extra}`;
   }
 
   function howTo(type, env, cold, lang) {
@@ -174,6 +241,6 @@
     return tips[type] || '';
   }
 
-  const api = { TYPES, TYPE_NAMES, COLOR_NAMES, SPECIES, guessWater, pickTargets, rank };
+  const api = { SIZES, sizeFor, TYPES, TYPE_NAMES, COLOR_NAMES, SPECIES, guessWater, pickTargets, rank };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Engine = api;
 })(typeof window !== 'undefined' ? window : globalThis);
