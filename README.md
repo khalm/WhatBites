@@ -26,6 +26,18 @@ Ingen konto, ingen nøkkel, ingen kostnad. All bildeanalyse skjer **på telefone
 
 *No account, no key, no cost. All photo analysis runs on the phone; the model (~155 MB) downloads once.*
 
+## Fargevalg / Colour choice
+Appen leser fargen på hvert agn (sølv, gull, kobber, hvit, rød, oransje, gul, chartreuse, grønn, blå, rosa, lilla, svart, naturfarge, selvlysende) og bruker vanlige fargeregler:
+- **Klart vann + sol:** naturlige farger og sølv
+- **Brunt/farget vann + gråvær:** gull, kobber, chartreuse, oransje
+- **Grumsete vann:** sterke farger og kontrast — chartreuse, oransje, hvit, svart
+- **Skumring:** chartreuse, gull, mørke silhuetter
+- **Natt:** svart/lilla silhuett eller selvlysende
+- **Dypt/kaldt:** rødt og oransje forsvinner først; chartreuse, grønn og blå synes lengre ned
+- Noen arter har kjente favorittfarger (f.eks. rød/oransje for abbor).
+
+Reglene står i `COLOR_FIT` og `FAV_COLORS` i `engine.js`. Kilder: [Academy Sports – lure colour chart](https://www.academy.com/expert-advice/lure-color-chart), [Minnesota DNR – Lure colors](https://dnr.state.mn.us/minnaqua/et/lure-colors.html).
+
 ## Datakilder / Data sources
 - Vær: [Open-Meteo](https://open-meteo.com) (gratis, ingen nøkkel)
 - Fiskearter: [GBIF](https://www.gbif.org) observasjonsdata

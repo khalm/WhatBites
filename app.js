@@ -38,7 +38,8 @@ const T = {
     downloading: (p, mb) => `Laster ned AI-modell… ${Math.round(p * 100)} % av ${mb} MB`,
     detecting: 'Ser etter agn i bildet…', use: 'Bruk', others: 'Andre i boksen', target: 'Mål', how: 'Slik', size: 'Størrelse',
     noBaits: 'Fant ikke noe agn. Prøv et nærmere og lysere bilde rett ovenfra, med agnet spredt litt utover.',
-    fixType: 'Feil type? Endre den, så regnes valget ut på nytt.',
+    fixType: 'Feil type eller farge? Endre det, så regnes valget ut på nytt.',
+    bestColors: 'Beste farger nå', favColors: 'Gode farger', typeLbl: 'Agntype', colorLbl: 'Farge',
     modelFail: 'Kunne ikke laste AI-modellen. Sjekk nettet og prøv igjen.',
     disclaimer: 'Agnvalg er forslag — sjekk lokale fiskeregler og fredningstider.',
     pickOn: '🎯 Jeg fisker etter denne', pickOff: '✖ Fjern fra dagens arter', readWiki: 'Les mer på Wikipedia ↗', close: 'Lukk',
@@ -75,7 +76,8 @@ const T = {
     downloading: (p, mb) => `Downloading AI model… ${Math.round(p * 100)}% of ${mb} MB`,
     detecting: 'Looking for baits in the photo…', use: 'Use', others: 'Others in the box', target: 'Target', how: 'How', size: 'Size',
     noBaits: "I couldn't find any baits. Try a closer, brighter photo from above, with the baits spread out a bit.",
-    fixType: 'Wrong type? Change it and the pick is recalculated.',
+    fixType: 'Wrong type or colour? Change it and the pick is recalculated.',
+    bestColors: 'Best colours now', favColors: 'Good colours', typeLbl: 'Bait type', colorLbl: 'Colour',
     modelFail: "Couldn't load the AI model. Check your connection and try again.",
     disclaimer: 'Bait picks are suggestions — check local fishing rules and seasons.',
     pickOn: "🎯 I'm fishing for this", pickOff: "✖ Remove from today's species", readWiki: 'Read more on Wikipedia ↗', close: 'Close',
@@ -205,6 +207,8 @@ async function openSheet(sci) {
   $('sheetWiki').classList.add('hidden');
   const z = Engine.SIZES[sci];
   $('sheetSize').textContent = z ? `${t('typicalSize')}: ${z.g[0]}–${z.g[1]} g, ${z.cm[0]}–${z.cm[1]} cm · ${lang === 'no' ? 'krok' : 'hook'} ${z.hook}` : '';
+  const fav = Engine.FAV_COLORS[sci];
+  if (fav) $('sheetSize').textContent += `${z ? ' · ' : ''}${t('favColors')}: ${fav.map((c) => (Engine.COLOR_NAMES[c] || [c, c])[L()]).join(', ')}`;
   renderSheetPick();
   $('sheet').showModal();
   let w = await wikiSummary(sci);
@@ -462,7 +466,7 @@ $('baitInput').onchange = async (e) => {
     $('modelNote').textContent = t('modelReady');
     $('modelBanner').classList.add('hidden');
     if (!dets.length) throw new Error(t('noBaits'));
-    state.bait = { img, baits: dets.map((d) => ({ ...d, color: Vision.colorOf(img, d.box) })) };
+    state.bait = { img, baits: dets.map((d) => ({ ...d, ...Vision.colorOf(img, d.box) })) };
     renderBaitResult();
     $('baitStage').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (err) { state.bait = null; showError(out, err.message); }
@@ -471,15 +475,29 @@ $('baitInput').onchange = async (e) => {
 
 function rerank() { if (state.bait) renderBaitResult(); }
 
+// Small colour dot for lists
+const SWATCH = {
+  silver: 'linear-gradient(135deg,#f4f6f8,#9aa3ab 50%,#eef1f3)', gold: 'linear-gradient(135deg,#ffe28a,#c9971c 55%,#fff0b3)',
+  copper: 'linear-gradient(135deg,#f3b07a,#a5562a 55%,#f0b98d)', white: '#f5f5f5', red: '#d62828', orange: '#ff8c1a',
+  yellow: '#ffe11a', chartreuse: '#b6f21b', green: '#2e9e4f', blue: '#2f6fd6', pink: '#ff8fb1', purple: '#7a3cc2',
+  black: '#111', natural: '#8a7354', glow: 'radial-gradient(circle,#eaffd0,#9cff57)',
+};
+const swatch = (c) => `<span class="swatch" style="background:${SWATCH[c] || '#888'}"></span>`;
+const colorName = (c) => (Engine.COLOR_NAMES[c] || Engine.COLOR_NAMES.natural)[L()];
+
 function renderBaitResult() {
   const { img, baits } = state.bait;
   const res = Engine.rank(baits, state.env, state.weather, state.fish, lang, state.preferred);
   const best = res.baits[0];
   drawBaits(img, res.baits, best);
-  const name = (b) => `${Engine.TYPE_NAMES[b.type][L()]} (${Engine.COLOR_NAMES[b.color][L()]})`;
-  const typeSelect = (b) => `<select data-id="${b.id}">${Engine.TYPES.map((ty) =>
+  const colors = (b) => colorName(b.color) + (b.color2 ? `/${colorName(b.color2)}` : '');
+  const name = (b) => `${Engine.TYPE_NAMES[b.type][L()]}, ${colors(b)}`;
+  const typeSelect = (b) => `<select data-id="${b.id}" data-field="type" aria-label="${esc(t('typeLbl'))}">${Engine.TYPES.map((ty) =>
     `<option value="${ty}"${ty === b.type ? ' selected' : ''}>${esc(Engine.TYPE_NAMES[ty][L()])}</option>`).join('')}</select>`;
+  const colorSelect = (b) => `<select data-id="${b.id}" data-field="color" aria-label="${esc(t('colorLbl'))}">${Engine.COLORS.map((c) =>
+    `<option value="${c}"${c === b.color ? ' selected' : ''}>${esc(colorName(c))}</option>`).join('')}</select>`;
   const targets = res.targets.map((x) => (Engine.SPECIES[x.key] ? (lang === 'no' ? x.sp.no : x.sp.en) : (commonName(x.key) || x.key))).join(', ');
+  const inBox = new Set(baits.flatMap((b) => [b.color, b.color2]));
   const out = $('baitResult');
   out.classList.remove('hidden'); out.classList.add('pick');
   out.innerHTML = `<h4>✅ ${t('use')} #${best.id}: ${esc(name(best))}</h4>
@@ -487,13 +505,17 @@ function renderBaitResult() {
     <p><b>${t('target')}:</b> ${state.preferred.length ? '🎯 ' : ''}${esc(targets)}<br>
     ${res.size ? `<b>${t('size')}:</b> ${esc(res.size)}<br>` : ''}
     <b>${t('how')}:</b> ${esc(res.tip)}</p>
+    <div class="bestcols"><b>${t('bestColors')}:</b> ${res.bestColors.map((c) =>
+      `<span class="colchip${inBox.has(c) ? ' have' : ''}">${swatch(c)}${esc(colorName(c))}${inBox.has(c) ? ' ✓' : ''}</span>`).join('')}</div>
     <h3>${t('others')}</h3>
     <ul class="baits">${res.baits.map((b) => `<li class="${b === best ? 'best' : ''}">
-      <span class="badge">#${b.id}</span>${typeSelect(b)}<span class="score">${b.score}</span></li>`).join('')}</ul>
+      <span class="badge">#${b.id}</span>${swatch(b.color)}${typeSelect(b)}${colorSelect(b)}<span class="score">${b.score}</span></li>`).join('')}</ul>
     <p class="tiny muted">${t('fixType')}</p>`;
   out.querySelectorAll('select').forEach((sel) => sel.onchange = () => {
     const b = state.bait.baits.find((x) => x.id === Number(sel.dataset.id));
-    if (b) { b.type = sel.value; renderBaitResult(); }
+    if (!b) return;
+    if (sel.dataset.field === 'color') { b.color = sel.value; b.color2 = null; } else b.type = sel.value;
+    renderBaitResult();
   });
 }
 
