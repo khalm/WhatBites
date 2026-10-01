@@ -261,7 +261,7 @@ $('bannerGo').onclick = async () => {
     $('modelNote').textContent = t('modelReady');
   } catch (err) {
     console.error(err);
-    $('bannerText').textContent = t('modelFail');
+    $('bannerText').innerHTML = `${esc(t('modelFail'))}<br><small class="errdetail">${esc(String(err.message).slice(0, 300))}</small>`;
     $('bannerGo').disabled = false; $('bannerLater').disabled = false;
   }
 };
@@ -457,7 +457,7 @@ $('baitInput').onchange = async (e) => {
         if (p >= 1) busy(true, t('detecting'));
         else busy(true, t('downloading')(p, total ? Math.round(total / 1e6) : 155), p);
       });
-    } catch (err) { console.error(err); throw new Error(t('modelFail')); }
+    } catch (err) { console.error(err); throw new Error(`${t('modelFail')} (${String(err.message).slice(0, 300)})`); }
     localStorage.setItem('wb_model_ok', '1');
     $('modelNote').textContent = t('modelReady');
     $('modelBanner').classList.add('hidden');

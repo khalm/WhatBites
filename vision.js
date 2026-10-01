@@ -4,8 +4,12 @@
  * - colorOf(): dominant colour class of each detected bait
  */
 (function (root) {
-  const TF_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0/dist/transformers.min.js';
   const MODEL = 'Xenova/owlvit-base-patch32';
+  // Library versions to try, in order. v3 is the long-tested line; v4 is newer.
+  const TF_URLS = [
+    'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.8.1',
+    'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.0/dist/transformers.min.js',
+  ];
 
   // Text prompts → bait type. OWL-ViT matches image regions against these phrases.
   const PROMPTS = [
@@ -24,17 +28,31 @@
   function loadDetector(onProgress) {
     if (!detectorPromise) {
       detectorPromise = (async () => {
-        const tf = await import(TF_URL);
-        const files = {};
-        return tf.pipeline('zero-shot-object-detection', MODEL, {
-          dtype: 'q8',
-          progress_callback: (p) => {
-            if (p.status !== 'progress' || !p.total) return;
-            files[p.file] = [p.loaded, p.total];
-            const [l, t] = Object.values(files).reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
-            onProgress?.(l / t, t);
-          },
-        });
+        const errors = [];
+        for (const url of TF_URLS) {
+          try {
+            const tf = await import(url);
+            if (tf.env) { tf.env.allowLocalModels = false; tf.env.useBrowserCache = true; }
+            const files = {};
+            const det = await tf.pipeline('zero-shot-object-detection', MODEL, {
+              dtype: 'q8',
+              device: 'wasm',
+              progress_callback: (p) => {
+                if (p.status !== 'progress' || !p.total) return;
+                files[p.file] = [p.loaded, p.total];
+                const [l, t] = Object.values(files).reduce((a, [x, y]) => [a[0] + x, a[1] + y], [0, 0]);
+                onProgress?.(l / t, t);
+              },
+            });
+            return det;
+          } catch (e) {
+            console.error('WhatBites model load failed with', url, e);
+            errors.push(`${url.match(/@([\d.]+)/)?.[1] || url}: ${e?.message || e}`);
+          }
+        }
+        const err = new Error(errors.join(' | '));
+        err.details = errors;
+        throw err;
       })().catch((e) => { detectorPromise = null; throw e; });
     }
     return detectorPromise;
