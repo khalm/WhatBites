@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b2530">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="WhatBites">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>WhatBites</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><img src="icon.svg" alt="" width="32" height="32"><h1>WhatBites</h1></div>
+    <div class="row">
+      <button id="langBtn" class="icon-btn lang" aria-label="Language">EN</button>
+      <button id="settingsBtn" class="icon-btn" data-i18n-aria="settings">⚙︎</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="card" id="step1">
+      <div class="step-head"><span class="num">1</span><h2 data-i18n="s1title"></h2></div>
+      <p class="muted" id="condStatus" data-i18n="s1intro"></p>
+      <button class="btn" id="locBtn" data-i18n="useLoc"></button>
+      <div id="conditions" class="hidden">
+        <div class="place" id="placeName"></div>
+        <div class="grid" id="weatherGrid"></div>
+        <h3 data-i18n="fishNearby"></h3>
+        <div class="chips" id="fishList"></div>
+        <p class="tiny muted" data-i18n="fishSource"></p>
+      </div>
+    </section>
+
+    <section class="card" id="step2">
+      <div class="step-head"><span class="num">2</span><h2 data-i18n="s2title"></h2></div>
+      <p class="muted" data-i18n="s2intro"></p>
+      <label class="btn"><span data-i18n="s2btn"></span>
+        <input type="file" accept="image/*" capture="environment" id="envInput" hidden>
+      </label>
+      <img id="envPreview" class="preview hidden" alt="">
+      <div id="envResult" class="result hidden"></div>
+    </section>
+
+    <section class="card" id="step3">
+      <div class="step-head"><span class="num">3</span><h2 data-i18n="s3title"></h2></div>
+      <p class="muted" data-i18n="s3intro"></p>
+      <label class="btn primary"><span data-i18n="s3btn"></span>
+        <input type="file" accept="image/*" capture="environment" id="baitInput" hidden>
+      </label>
+      <div id="baitStage" class="stage hidden"><canvas id="baitCanvas"></canvas></div>
+      <div id="baitResult" class="result hidden"></div>
+    </section>
+
+    <p class="tiny muted center" data-i18n="disclaimer"></p>
+  </main>
+
+  <div id="busy" class="busy hidden"><div class="spinner"></div><p id="busyText"></p></div>
+
+  <dialog id="settings">
+    <form method="dialog">
+      <h2 data-i18n="settings"></h2>
+      <p class="muted" data-i18n="keyHelp"></p>
+      <label><span data-i18n="apiKey"></span><input id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-…"></label>
+      <label><span data-i18n="model"></span><input id="model" type="text" placeholder="claude-sonnet-5-5"></label>
+      <div class="row">
+        <button value="cancel" class="btn ghost" data-i18n="cancel"></button>
+        <button value="save" class="btn primary" data-i18n="save"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

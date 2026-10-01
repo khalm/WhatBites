@@ -1,0 +1,80 @@
+:root {
+  --bg: #071a22;
+  --card: #0e2a35;
+  --line: #1d4250;
+  --text: #e8f3f1;
+  --muted: #8fb0b0;
+  --accent: #ffb547;
+  --good: #4fd1a5;
+  --bad: #ff6b6b;
+  --radius: 16px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--text);
+  font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+body { padding-bottom: env(safe-area-inset-bottom); }
+.hidden { display: none !important; }
+
+.top { position: sticky; top: 0; z-index: 5; display: flex; align-items: center; justify-content: space-between;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 10px; background: rgba(7,26,34,.92); backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line); }
+.brand { display: flex; gap: 10px; align-items: center; }
+.brand h1 { font-size: 20px; margin: 0; letter-spacing: .3px; }
+.icon-btn { background: none; border: 1px solid var(--line); color: var(--text); border-radius: 10px;
+  width: 40px; height: 40px; font-size: 20px; }
+
+main { max-width: 640px; margin: 0 auto; padding: 16px; display: grid; gap: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
+.step-head { display: flex; align-items: center; gap: 10px; }
+.step-head h2 { margin: 0; font-size: 18px; }
+.num { width: 28px; height: 28px; border-radius: 50%; background: var(--accent); color: #241400;
+  display: grid; place-items: center; font-weight: 700; font-size: 14px; }
+h3 { font-size: 15px; margin: 16px 0 8px; color: var(--muted); font-weight: 600; }
+.muted { color: var(--muted); }
+.tiny { font-size: 12px; }
+.center { text-align: center; }
+
+.btn { display: block; width: 100%; text-align: center; padding: 14px; margin-top: 8px; border-radius: 12px;
+  border: 1px solid var(--line); background: #133846; color: var(--text); font-size: 16px; font-weight: 600; cursor: pointer; }
+.btn.primary { background: var(--accent); color: #241400; border-color: var(--accent); }
+.btn.ghost { background: transparent; }
+.btn:active { transform: scale(.98); }
+
+.place { font-weight: 700; margin: 12px 0 8px; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { background: #0a2029; border: 1px solid var(--line); border-radius: 10px; padding: 8px; }
+.stat b { display: block; font-size: 17px; }
+.stat span { font-size: 12px; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: #0a2029; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; font-size: 13px; }
+.chip i { color: var(--muted); font-style: italic; }
+
+.preview { width: 100%; border-radius: 12px; margin-top: 12px; }
+.stage { margin-top: 12px; }
+.stage canvas { width: 100%; height: auto; border-radius: 12px; display: block; }
+.result { margin-top: 12px; padding: 12px; border-radius: 12px; background: #0a2029; border: 1px solid var(--line); }
+.result h4 { margin: 0 0 6px; font-size: 16px; color: var(--accent); }
+.result ol { padding-left: 20px; margin: 8px 0 0; }
+.result li { margin-bottom: 6px; }
+.result .err { color: var(--bad); }
+.pick { border-color: var(--good); }
+.pick h4 { color: var(--good); }
+
+.busy { position: fixed; inset: 0; background: rgba(4,14,18,.8); display: grid; place-content: center; gap: 12px;
+  text-align: center; z-index: 20; }
+.spinner { width: 44px; height: 44px; margin: 0 auto; border: 4px solid var(--line); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+dialog { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: var(--radius);
+  width: min(92vw, 480px); padding: 20px; }
+dialog::backdrop { background: rgba(0,0,0,.6); }
+dialog h2 { margin-top: 0; }
+dialog label { display: block; margin: 12px 0; font-size: 14px; color: var(--muted); }
+dialog input { display: block; width: 100%; margin-top: 4px; padding: 12px; border-radius: 10px;
+  border: 1px solid var(--line); background: #0a2029; color: var(--text); font-size: 16px; }
+.row { display: flex; gap: 8px; }
+.icon-btn.lang { font-size: 13px; font-weight: 700; width: 44px; }
+.top .row { gap: 8px; }
+/* iOS: stop zoom on input focus, smooth tap feel */
+input, button { font-size: 16px; -webkit-tap-highlight-color: transparent; }
