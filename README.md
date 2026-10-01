@@ -7,7 +7,7 @@ Hva biter? Pek kameraet mot vannet og agnboksen din — WhatBites viser hvilket 
 
 ## Slik virker det / How it works
 1. **Sted og vær** — henter posisjon, vær (temperatur, vind, skydekke, lufttrykk og trend, sol opp/ned) og fiskearter registrert innen ca. 30 km.
-2. **Vis vannet** — ta bilde av fiskeplassen; AI vurderer vanntype, sikt, lys og struktur.
+2. **Vis vannet** — ta bilde av fiskeplassen; appen leser lys og sikt. Velg innsjø, elv eller sjø.
 3. **Vis agnboksen** — ta bilde av boksen; appen markerer det beste agnet i bildet og rangerer resten.
 
 Norsk er standard, trykk **EN/NO** øverst for å bytte språk.
@@ -16,9 +16,15 @@ Norsk er standard, trykk **EN/NO** øverst for å bytte språk.
 - **iPhone (Safari):** Åpne lenken → Del-knappen → **Legg til på Hjem-skjerm**.
 - **Android (Chrome):** Åpne lenken → ⋮-menyen → **Installer app** / **Legg til på startskjermen**.
 
-## API-nøkkel / API key
-Bildeanalysen bruker Claude. Lag en nøkkel på [console.anthropic.com](https://console.anthropic.com), trykk ⚙︎ i appen og lim den inn.
-Nøkkelen lagres kun på telefonen din. Hver analyse koster noen få øre i API-bruk.
+## Helt gratis / Completely free
+Ingen konto, ingen nøkkel, ingen kostnad. All bildeanalyse skjer **på telefonen**:
+- Agnet i boksen finnes med en åpen AI-modell ([OWL-ViT](https://huggingface.co/Xenova/owlvit-base-patch32) via [Transformers.js](https://github.com/huggingface/transformers.js)).
+  Første gang lastes modellen ned (ca. 155 MB, bruk gjerne Wi-Fi) — deretter ligger den lagret på telefonen.
+- Lys og vannfarge leses fra bildet av fiskeplassen. Du kan trykke for å rette.
+- Valget gjøres av en innebygd regelmotor (`engine.js`) som veier fiskeart, sikt, lys, temperatur, vind og lufttrykk.
+- Feil agntype? Endre den i lista under bildet, så regnes valget ut på nytt.
+
+*No account, no key, no cost. All photo analysis runs on the phone; the model (~155 MB) downloads once.*
 
 ## Datakilder / Data sources
 - Vær: [Open-Meteo](https://open-meteo.com) (gratis, ingen nøkkel)
@@ -28,6 +34,8 @@ Nøkkelen lagres kun på telefonen din. Hver analyse koster noen få øre i API-
 ## Teknisk
 Ren HTML/CSS/JavaScript uten byggesteg, hostet på GitHub Pages. Kan redigeres direkte i GitHub på mobilen.
 - `index.html` — sider og layout
-- `app.js` — all logikk og oversettelser (`T`-objektet øverst)
+- `app.js` — skjermlogikk og oversettelser (`T`-objektet øverst)
+- `engine.js` — regelmotoren: arter, agntyper og forhold
+- `vision.js` — bildeanalyse på telefonen
 - `style.css` — utseende
 - `sw.js`, `manifest.json` — installerbar app (PWA)

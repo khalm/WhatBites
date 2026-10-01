@@ -17,10 +17,7 @@
 <body>
   <header class="top">
     <div class="brand"><img src="icon.svg" alt="" width="32" height="32"><h1>WhatBites</h1></div>
-    <div class="row">
-      <button id="langBtn" class="icon-btn lang" aria-label="Language">EN</button>
-      <button id="settingsBtn" class="icon-btn" data-i18n-aria="settings">⚙︎</button>
-    </div>
+    <button id="langBtn" class="icon-btn lang" aria-label="Language">EN</button>
   </header>
 
   <main>
@@ -44,7 +41,10 @@
         <input type="file" accept="image/*" capture="environment" id="envInput" hidden>
       </label>
       <img id="envPreview" class="preview hidden" alt="">
-      <div id="envResult" class="result hidden"></div>
+      <h3 data-i18n="water"></h3><div class="seg" data-group="water"></div>
+      <h3 data-i18n="clarity"></h3><div class="seg" data-group="clarity"></div>
+      <h3 data-i18n="light"></h3><div class="seg" data-group="light"></div>
+      <p class="tiny muted" data-i18n="segHelp"></p>
     </section>
 
     <section class="card" id="step3">
@@ -53,6 +53,7 @@
       <label class="btn primary"><span data-i18n="s3btn"></span>
         <input type="file" accept="image/*" capture="environment" id="baitInput" hidden>
       </label>
+      <p class="tiny muted" id="modelNote"></p>
       <div id="baitStage" class="stage hidden"><canvas id="baitCanvas"></canvas></div>
       <div id="baitResult" class="result hidden"></div>
     </section>
@@ -60,21 +61,11 @@
     <p class="tiny muted center" data-i18n="disclaimer"></p>
   </main>
 
-  <div id="busy" class="busy hidden"><div class="spinner"></div><p id="busyText"></p></div>
+  <div id="busy" class="busy hidden"><div class="spinner"></div><p id="busyText"></p>
+    <div class="bar hidden" id="busyBar"><div id="busyFill"></div></div></div>
 
-  <dialog id="settings">
-    <form method="dialog">
-      <h2 data-i18n="settings"></h2>
-      <p class="muted" data-i18n="keyHelp"></p>
-      <label><span data-i18n="apiKey"></span><input id="apiKey" type="password" autocomplete="off" placeholder="sk-ant-…"></label>
-      <label><span data-i18n="model"></span><input id="model" type="text" placeholder="claude-sonnet-5-5"></label>
-      <div class="row">
-        <button value="cancel" class="btn ghost" data-i18n="cancel"></button>
-        <button value="save" class="btn primary" data-i18n="save"></button>
-      </div>
-    </form>
-  </dialog>
-
+  <script src="engine.js"></script>
+  <script src="vision.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
