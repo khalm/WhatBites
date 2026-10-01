@@ -1,5 +1,5 @@
 // Network first (always fresh after an update), cache as offline fallback.
-const CACHE = 'whatbites-v6';
+const CACHE = 'whatbites-v7';
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(
   caches.keys().then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())));
