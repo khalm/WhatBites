@@ -8,6 +8,16 @@ const $ = (id) => document.getElementById(id);
 /* ---------- language ---------- */
 const T = {
   no: {
+    savedOffline: '📦 Lagret for bruk uten nett.',
+    usingSaved: (place, age) => `📴 Uten nett — bruker data lagret ${place ? 'for ' + place + ' ' : ''}${age}.`,
+    offlineNothing: '📴 Uten nett, og ingen lagrede data her. Appen bruker GPS, solhøyde og bildene dine — vær og fiskearter mangler.',
+    forecastOld: 'Værvarselet er for gammelt — skydekket tas fra bildet.',
+    age: { now: 'nå nettopp', hours: (h) => `for ${h} t siden`, days: (d) => `for ${d} ${d === 1 ? 'dag' : 'dager'} siden` },
+    planTitle: '🗺️ Planlegg tur — lagre et sted for bruk uten nett', planHint: 'Søk opp vannet du skal til mens du har nett. Appen lagrer værvarsel for 4 dager, fiskearter og vanntype.',
+    planPh: 'f.eks. Mjøsa eller Akerselva', planSearch: 'Søk', searching: 'Søker…', noPlaces: 'Fant ingen steder.',
+    planNeedsNet: 'Du trenger nett for å planlegge en tur.', savingTrip: (n) => `Lagrer ${n}…`,
+    tripSaved: (n, f, w) => `✓ ${n} er lagret${w ? ' (' + w.toLowerCase() + ')' : ''}: værvarsel for 4 dager og ${f} fiskearter.`,
+    savedPlaces: 'Lagrede steder', remove: 'Fjern', offlineBadge: '📴 Uten nett',
     s1title: 'Sted og vær', s1intro: 'Finn plassen din for å hente vær og hvilke fisk som finnes der.',
     useLoc: '📍 Bruk min posisjon', refreshLoc: '📍 Oppdater posisjon', finding: 'Finner deg…', loading: 'Henter vær og fisk…',
     gotIt: 'Klart. Vis meg vannet nå.', noGeo: 'Nettleseren støtter ikke posisjon.',
@@ -23,7 +33,7 @@ const T = {
     ck: { sky: 'Skydekke', light: 'Lys', water: 'Vanntype', clarity: 'Sikt i vannet' },
     skyVals: { clear: 'Klart', partly: 'Delvis skyet', overcast: 'Overskyet', sunset: 'Solnedgang', dark: 'Mørk himmel' },
     src: { photo: 'bilde', weather: 'værvarsel', gps: 'kart', sun: 'solhøyde', camera: 'kameraets lysmåler', user: 'valgt av deg' },
-    missing: 'mangler', within: { near: 'innen 200 m', km: 'innen 1 km' },
+    missing: 'mangler', within: { near: 'innen 200 m', km: 'innen 1 km', plan: 'planlagt tur' },
     ask: {
       start: 'Ta et oversiktsbilde: stå ved vannet og hold telefonen slik at horisonten er midt i bildet — litt himmel øverst og vann nederst.',
       noSky: 'Fant ikke himmel i bildet. Vipp telefonen litt opp, så en stripe himmel kommer med øverst.',
@@ -61,7 +71,7 @@ const T = {
     modelNote: 'Første gang lastes en gratis AI-modell ned (ca. 155 MB).',
     modelReady: 'AI-modellen er lastet ned og ligger på telefonen.',
     bannerTitle: '📶 Last ned AI-modellen mens du har Wi-Fi',
-    bannerText: 'Appen trenger en gratis AI-modell (ca. 155 MB) for å finne agnet i bildet. Last den ned nå, så virker den ute ved vannet uten å bruke mobildata.',
+    bannerText: 'Appen trenger en gratis AI-modell (ca. 155 MB) for å finne agnet i bildet. Last den ned nå på Wi-Fi — da virker appen også ved vannet uten nett.',
     bannerMobile: 'Det ser ut som du er på mobildata. Vent gjerne til du har Wi-Fi.',
     later: 'Senere', downloadNow: 'Last ned nå', bannerDone: '✅ Ferdig! Modellen ligger nå på telefonen.',
     downloading: (p, mb) => `Laster ned AI-modell… ${Math.round(p * 100)} % av ${mb} MB`,
@@ -78,6 +88,16 @@ const T = {
     noInfo: 'Fant ingen artikkel om denne arten.', typicalSize: 'Typisk agn',
   },
   en: {
+    savedOffline: '📦 Saved for use without signal.',
+    usingSaved: (place, age) => `📴 No signal — using data saved ${place ? 'for ' + place + ' ' : ''}${age}.`,
+    offlineNothing: '📴 No signal and no saved data here. The app uses GPS, sun height and your photos — weather and fish species are missing.',
+    forecastOld: 'The saved forecast is too old — cloud cover comes from the photo.',
+    age: { now: 'just now', hours: (h) => `${h} h ago`, days: (d) => `${d} ${d === 1 ? 'day' : 'days'} ago` },
+    planTitle: '🗺️ Plan a trip — save a place for use without signal', planHint: 'Look up the water you are going to while you have signal. The app saves a 4-day forecast, fish species and water type.',
+    planPh: 'e.g. Mjøsa or Akerselva', planSearch: 'Search', searching: 'Searching…', noPlaces: 'No places found.',
+    planNeedsNet: 'You need signal to plan a trip.', savingTrip: (n) => `Saving ${n}…`,
+    tripSaved: (n, f, w) => `✓ ${n} is saved${w ? ' (' + w.toLowerCase() + ')' : ''}: 4-day forecast and ${f} fish species.`,
+    savedPlaces: 'Saved places', remove: 'Remove', offlineBadge: '📴 No signal',
     s1title: 'Where & weather', s1intro: 'Find your spot to load weather and the fish that live there.',
     useLoc: '📍 Use my location', refreshLoc: '📍 Refresh location', finding: 'Finding you…', loading: 'Loading weather and fish…',
     gotIt: 'Got it. Now show me the water.', noGeo: 'This browser has no location support.',
@@ -93,7 +113,7 @@ const T = {
     ck: { sky: 'Cloud cover', light: 'Light', water: 'Water type', clarity: 'Water clarity' },
     skyVals: { clear: 'Clear', partly: 'Partly cloudy', overcast: 'Overcast', sunset: 'Sunset', dark: 'Dark sky' },
     src: { photo: 'photo', weather: 'forecast', gps: 'map', sun: 'sun height', camera: "camera's light meter", user: 'chosen by you' },
-    missing: 'missing', within: { near: 'within 200 m', km: 'within 1 km' },
+    missing: 'missing', within: { near: 'within 200 m', km: 'within 1 km', plan: 'planned trip' },
     ask: {
       start: 'Take an overview photo: stand by the water and hold the phone so the horizon is in the middle — some sky at the top, water at the bottom.',
       noSky: "Couldn't find sky in the photo. Tilt the phone up a little so a strip of sky is included at the top.",
@@ -131,7 +151,7 @@ const T = {
     modelNote: 'The first time, a free AI model is downloaded (about 155 MB).',
     modelReady: 'The AI model is downloaded and stored on your phone.',
     bannerTitle: '📶 Download the AI model while on Wi-Fi',
-    bannerText: 'The app needs a free AI model (about 155 MB) to find the baits in your photo. Download it now so it works by the water without using mobile data.',
+    bannerText: 'The app needs a free AI model (about 155 MB) to find the baits in your photo. Download it now on Wi-Fi — then the app also works by the water without signal.',
     bannerMobile: 'Looks like you are on mobile data. You may want to wait for Wi-Fi.',
     later: 'Later', downloadNow: 'Download now', bannerDone: '✅ Done! The model is now stored on your phone.',
     downloading: (p, mb) => `Downloading AI model… ${Math.round(p * 100)}% of ${mb} MB`,
@@ -172,7 +192,8 @@ function applyLang() {
   $('modelNote').textContent = modelOk() ? t('modelReady') : t('modelNote');
   renderBanner();
   if (state.lat !== null) { $('locBtn').textContent = t('refreshLoc'); renderConditions(); loadWikiNames(); }
-  renderSegs(); renderSpot();
+  renderSegs(); renderSpot(); renderTrips(); renderNet();
+  $('planQ').placeholder = t('planPh');
   if (state.bait) renderBaitResult();
 }
 $('langBtn').onclick = () => { lang = lang === 'no' ? 'en' : 'no'; localStorage.setItem('wb_ui', lang); applyLang(); };
@@ -186,8 +207,10 @@ function busy(on, text = '', progress = null) {
 }
 function esc(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
 function showError(el, msg) { el.classList.remove('hidden', 'pick'); el.innerHTML = `<p class="err">${esc(msg)}</p>`; }
-async function getJSON(url) {
-  const r = await fetch(url);
+async function getJSON(url, ms = 9000) {
+  // Weak signal by the water: give up after a while instead of hanging
+  const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), ms);
+  const r = await fetch(url, { signal: ctl.signal }).finally(() => clearTimeout(to));
   if (!r.ok) throw new Error(`${r.status} ${r.statusText}`);
   return r.json();
 }
@@ -228,7 +251,10 @@ async function wikiSummary(sci, lg = lang) {
         url: d.content_urls?.mobile?.page || d.content_urls?.desktop?.page || '',
       };
     }
-  } catch { /* not found */ }
+  } catch (err) {
+    // Only remember "no article" for a real 404 — not when there is just no signal
+    if (!String(err?.message).startsWith('404')) return null;
+  }
   wikiCache[k] = v;
   saveWikiCache();
   return v;
@@ -320,6 +346,7 @@ $('bannerGo').onclick = async () => {
       $('bannerText').textContent = t('downloading')(p, total ? Math.round(total / 1e6) : 155);
     });
     localStorage.setItem('wb_model_ok', '1');
+    localStorage.setItem(OFFLINE_KEY, '1');
     $('modelBanner').dataset.done = '1';
     $('bannerText').textContent = t('bannerDone');
     $('bannerBar').classList.add('hidden');
@@ -334,6 +361,62 @@ $('bannerGo').onclick = async () => {
   }
 };
 
+/* ---------- plan a trip (save a place for offline use) ---------- */
+function ageText(ts) {
+  const h = (Date.now() - ts) / 3600000;
+  if (h < 1) return t('age').now;
+  if (h < 24) return t('age').hours(Math.round(h));
+  return t('age').days(Math.round(h / 24));
+}
+function renderTrips() {
+  const list = loadSpots();
+  $('tripList').innerHTML = list.length ? `<p class="tiny muted">${t('savedPlaces')}:</p>` + list.map((sp, i) => `<li>
+    <span>📦 <b>${esc(sp.name || sp.place || `${sp.lat.toFixed(2)}, ${sp.lon.toFixed(2)}`)}</b> <span class="muted">· ${ageText(sp.ts)}</span></span>
+    <button type="button" class="x" data-i="${i}" aria-label="${esc(t('remove'))}">✕</button></li>`).join('') : '';
+}
+$('tripList').addEventListener('click', (e) => {
+  const b = e.target.closest('button.x'); if (!b) return;
+  const list = loadSpots(); list.splice(Number(b.dataset.i), 1); saveSpots(list); renderTrips();
+});
+async function searchPlaces() {
+  const q = $('planQ').value.trim(); if (!q) return;
+  if (navigator.onLine === false) { $('planStatus').textContent = t('planNeedsNet'); return; }
+  $('planStatus').textContent = t('searching');
+  try {
+    const res = await getJSON(`https://nominatim.openstreetmap.org/search?format=json&limit=6&countrycodes=no,se,dk,fi&accept-language=${lang === 'no' ? 'nb' : 'en'}&q=${encodeURIComponent(q)}`);
+    $('planStatus').textContent = res.length ? '' : t('noPlaces');
+    $('planResults').innerHTML = res.map((r, i) => `<li><button type="button" class="link" data-i="${i}">${esc(r.display_name)}</button></li>`).join('');
+    $('planResults').onclick = (e) => { const b = e.target.closest('button.link'); if (b) saveTrip(res[Number(b.dataset.i)]); };
+  } catch { $('planStatus').textContent = t('planNeedsNet'); }
+}
+$('planGo').onclick = searchPlaces;
+$('planQ').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); searchPlaces(); } });
+async function saveTrip(r) {
+  const lat = Number(r.lat), lon = Number(r.lon);
+  const name = (r.name || r.display_name || '').split(',')[0];
+  $('planResults').innerHTML = '';
+  $('planStatus').textContent = t('savingTrip')(name);
+  const [w, f, g] = await Promise.allSettled([loadWeatherRaw(lat, lon), loadFish(lat, lon), loadNearbyWater(lat, lon)]);
+  const gps = Trip.waterFromPlace(r) || (g.status === 'fulfilled' ? g.value : null);
+  const fish = f.status === 'fulfilled' ? f.value : [];
+  rememberSpot({ lat, lon, name, place: r.display_name.split(',').slice(0, 2).join(','), fish, gps, raw: w.status === 'fulfilled' ? w.value : null });
+  prefetchSpecies(fish);
+  $('planStatus').textContent = t('tripSaved')(name, fish.length, gps ? t('opts').water[gps.type] : '');
+}
+
+/* ---------- signal indicator ---------- */
+function renderNet() {
+  const off = navigator.onLine === false;
+  $('netBadge').classList.toggle('hidden', !off);
+  $('netBadge').textContent = t('offlineBadge');
+}
+// Signal back → fetch the current forecast, fish and map data straight away
+window.addEventListener('online', () => {
+  renderNet();
+  if (state.lat !== null && state.offline) loadConditions(state.lat, state.lon);
+});
+window.addEventListener('offline', renderNet);
+
 /* ---------- step 1: location, weather, fish ---------- */
 $('locBtn').onclick = () => {
   if (!navigator.geolocation) { $('condStatus').textContent = t('noGeo'); return; }
@@ -345,48 +428,78 @@ $('locBtn').onclick = () => {
   );
 };
 
+/* ---------- offline: saved spots ---------- */
+const loadSpots = () => { try { return JSON.parse(localStorage.getItem('wb_spots') || '[]'); } catch { return []; } };
+const saveSpots = (list) => { try { localStorage.setItem('wb_spots', JSON.stringify(list)); } catch { /* storage full */ } };
+function rememberSpot(spotData) { saveSpots(Trip.upsertSpot(loadSpots(), { ...spotData, ts: Date.now() })); renderTrips(); }
+
 async function loadConditions(lat, lon) {
   state.lat = lat; state.lon = lon;
   $('condStatus').textContent = t('loading');
   spot.gpsLoading = true;
-  const [w, f, p, g] = await Promise.allSettled([loadWeather(lat, lon), loadFish(lat, lon), loadPlace(lat, lon), loadNearbyWater(lat, lon)]);
-  state.weather = w.status === 'fulfilled' ? w.value : null;
-  state.fish = f.status === 'fulfilled' ? f.value : [];
-  state.place = p.status === 'fulfilled' ? p.value : `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
-  spot.gps = g.status === 'fulfilled' ? g.value : null;
+  const online = navigator.onLine !== false;
+  const none = Promise.reject(new Error('offline'));
+  none.catch(() => {});
+  const [w, f, p, g] = await Promise.allSettled(online
+    ? [loadWeatherRaw(lat, lon), loadFish(lat, lon), loadPlace(lat, lon), loadNearbyWater(lat, lon)]
+    : [none, none, none, none]);
+  let raw = w.status === 'fulfilled' ? w.value : null;
+  let fish = f.status === 'fulfilled' && f.value.length ? f.value : null;
+  let place = p.status === 'fulfilled' ? p.value : null;
+  let gps = g.status === 'fulfilled' ? g.value : undefined; // undefined = lookup failed, null = no water found
+
+  // Fresh data → save it for later use without signal
+  if (raw || fish) {
+    const old = Trip.nearestSpot(loadSpots(), lat, lon, 3);
+    rememberSpot({ lat, lon, place: place || old?.place || '', fish: fish || old?.fish || [], gps: gps !== undefined ? gps : old?.gps || null, raw: raw || old?.raw || null });
+    prefetchSpecies(fish || []);
+  }
+  // Missing data → use the nearest saved spot
+  const used = [];
+  const saved = Trip.nearestSpot(loadSpots(), lat, lon, 30);
+  if (saved) {
+    if (!raw && saved.raw) { raw = saved.raw; used.push('weather'); }
+    if (!fish && saved.fish?.length) { fish = saved.fish; used.push('fish'); }
+    if (!place && saved.place) place = saved.place;
+    if (gps === undefined && saved.gps && (saved.km < 1.5 || saved.gps.tier === 'plan')) { gps = saved.gps; used.push('water'); }
+  }
+  state.weather = raw ? Trip.weatherAt(raw, Date.now()) : null;
+  const forecastExpired = raw && !state.weather;
+  state.fish = fish || [];
+  state.place = place || `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
+  spot.gps = gps || null;
   spot.gpsLoading = false;
+  state.offline = (!online || used.length) ? { used, saved, online, forecastExpired } : null;
   // No water found on the map: weak hint from which fish live nearby
   if (!spot.gps) {
     const guessW = Engine.guessWater(state.fish);
     if (guessW) spot.gps = { type: guessW, name: '', types: [guessW], ambiguous: true, tier: 'species' };
   }
   $('locBtn').textContent = t('refreshLoc');
-  renderConditions(); updateSpot();
-  loadWikiNames();
+  renderConditions(); updateSpot(); renderNet();
+  if (online) loadWikiNames();
 }
 
-async function loadWeather(lat, lon) {
+/** Save species info and photos while there is signal. */
+async function prefetchSpecies(fish) {
+  for (const f of fish.slice(0, 25)) {
+    try {
+      const w = await wikiSummary(f.name);
+      if (w?.img) fetch(w.img, { mode: 'no-cors' }).catch(() => {}); // stored by the service worker
+    } catch { /* ignore */ }
+  }
+}
+
+/** Hourly forecast for yesterday + the next 4 days, so it can be used later without signal. */
+async function loadWeatherRaw(lat, lon) {
   const url = 'https://api.open-meteo.com/v1/forecast?' + new URLSearchParams({
     latitude: lat, longitude: lon, timezone: 'auto', wind_speed_unit: 'ms',
-    current: 'temperature_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,surface_pressure,precipitation,is_day',
-    hourly: 'surface_pressure,precipitation', past_hours: 24, forecast_hours: 1,
-    daily: 'sunrise,sunset', forecast_days: 1,
+    hourly: 'temperature_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,surface_pressure,precipitation,is_day',
+    daily: 'sunrise,sunset', past_days: 1, forecast_days: 4,
   });
   const d = await getJSON(url);
-  const c = d.current;
-  const p = d.hourly?.surface_pressure || [];
-  const trend = p.length > 6 ? p[p.length - 1] - p[p.length - 7] : 0;           // last 6 hours
-  const rain24 = (d.hourly?.precipitation || []).slice(0, 24).reduce((a, b) => a + (b || 0), 0);
-  return {
-    temp: c.temperature_2m, code: c.weather_code, cloud: c.cloud_cover,
-    wind: c.wind_speed_10m, windDeg: c.wind_direction_10m,
-    pressure: Math.round(c.surface_pressure),
-    pressureTrend: trend > 1 ? 'rising' : trend < -1 ? 'falling' : 'steady',
-    rain: c.precipitation, isDay: !!c.is_day,
-    sunrise: d.daily?.sunrise?.[0]?.slice(11), sunset: d.daily?.sunset?.[0]?.slice(11),
-    monthIndex: new Date().getMonth(),
-    rain24,
-  };
+  d._fetched = Date.now();
+  return d;
 }
 
 // GBIF moved occurrences to Catalogue of Life keys in 2026. Try that first, then the old backbone key.
@@ -419,7 +532,13 @@ async function loadPlace(lat, lon) {
 }
 
 function renderConditions() {
-  $('condStatus').textContent = t('gotIt');
+  const off = state.offline;
+  let status = t('gotIt');
+  if (off && off.saved && (off.used.length || !off.online)) status = t('usingSaved')(off.saved.place || '', ageText(off.saved.ts));
+  else if (off && !off.online) status = t('offlineNothing');
+  else status += ' ' + t('savedOffline');
+  if (off && off.forecastExpired) status += ' ' + t('forecastOld');
+  $('condStatus').textContent = status;
   $('conditions').classList.remove('hidden');
   $('placeName').textContent = state.place;
   const w = state.weather;
@@ -762,5 +881,12 @@ function drawBaits(img, baits, best) {
 /* ---------- start ---------- */
 loadWikiCacheFromStorage();
 applyLang();
+if (navigator.storage?.persist) navigator.storage.persist().catch(() => {}); // ask the phone not to delete the saved model/data
+// Once per app version, while online: load the AI model in the background so the library and its
+// WebAssembly files get stored for offline use (the model itself is already on the phone).
+const OFFLINE_KEY = 'wb_offline_ready_v15';
+if (modelOk() && navigator.onLine !== false && !localStorage.getItem(OFFLINE_KEY)) {
+  setTimeout(() => Vision.loadDetector().then(() => localStorage.setItem(OFFLINE_KEY, '1')).catch(() => {}), 8000);
+}
 updateSpot();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});

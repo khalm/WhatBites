@@ -46,6 +46,14 @@ Appen leser fargen på hvert agn (sølv, gull, kobber, hvit, rød, oransje, gul,
 
 Reglene står i `COLOR_FIT` og `FAV_COLORS` i `engine.js`. Kilder: [Academy Sports – lure colour chart](https://www.academy.com/expert-advice/lure-color-chart), [Minnesota DNR – Lure colors](https://dnr.state.mn.us/minnaqua/et/lure-colors.html).
 
+## Uten nett / Offline
+Appen virker også der det ikke er dekning:
+- Selve appen og AI-modellen ligger lagret på telefonen (last ned modellen på Wi-Fi).
+- **Med dekning** hentes alltid ferskt vær, fiskearter og kartdata — og det lagres automatisk.
+- **Uten dekning** brukes lagret værvarsel (timen som gjelder nå, inntil 4 dager fram), fiskearter og vanntype fra nærmeste lagrede sted. GPS, solhøyde, bildeanalyse og agnvalg virker alltid.
+- **Planlegg tur:** søk opp vannet hjemme, så lagres alt du trenger før du drar.
+- Når dekningen kommer tilbake, oppdateres alt av seg selv.
+
 ## Datakilder / Data sources
 - Vær: [Open-Meteo](https://open-meteo.com) (gratis, ingen nøkkel)
 - Fiskearter: [GBIF](https://www.gbif.org) observasjonsdata

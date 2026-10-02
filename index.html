@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json?v=8">
   <link rel="icon" href="icon.svg?v=8" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png?v=8">
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
   <div id="splash" aria-hidden="true">
@@ -30,6 +30,7 @@
       setTimeout(function () { s.remove(); }, 300);
     }, 1500);
   </script>
+  <div id="netBadge" class="net-badge hidden"></div>
   <button id="langBtn" class="lang-float" aria-label="Language"><span class="flag" id="langFlag">🇬🇧</span><span id="langCode">EN</span></button>
 
   <main>
@@ -46,6 +47,14 @@
       <div class="step-head"><span class="num">1</span><h2 data-i18n="s1title"></h2></div>
       <p class="muted" id="condStatus" data-i18n="s1intro"></p>
       <button class="btn" id="locBtn" data-i18n="useLoc"></button>
+      <details class="plan" id="planBox">
+        <summary data-i18n="planTitle"></summary>
+        <p class="tiny muted" data-i18n="planHint"></p>
+        <div class="row"><input id="planQ" type="search" autocomplete="off"><button type="button" class="btn" id="planGo" data-i18n="planSearch"></button></div>
+        <ul class="plan-results" id="planResults"></ul>
+        <p class="tiny" id="planStatus"></p>
+        <ul class="trips" id="tripList"></ul>
+      </details>
       <div id="conditions" class="hidden">
         <div class="place" id="placeName"></div>
         <div class="grid" id="weatherGrid"></div>
@@ -108,9 +117,10 @@
     <button class="btn ghost" id="sheetClose" data-i18n="close"></button>
   </dialog>
 
-  <script src="engine.js?v=14"></script>
-  <script src="scene.js?v=14"></script>
-  <script src="vision.js?v=14"></script>
-  <script src="app.js?v=14"></script>
+  <script src="engine.js?v=15"></script>
+  <script src="scene.js?v=15"></script>
+  <script src="trip.js?v=15"></script>
+  <script src="vision.js?v=15"></script>
+  <script src="app.js?v=15"></script>
 </body>
 </html>
