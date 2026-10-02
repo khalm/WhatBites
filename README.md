@@ -3,7 +3,7 @@
 Hva biter? Pek kameraet mot vannet og agnboksen din — WhatBites viser hvilket agn du bør bruke akkurat nå.
 *What bites? Point your camera at the water and your bait box — WhatBites shows which bait to use right now.*
 
-**Åpne appen / Open the app:** https://khalm.github.io/WhatBites/
+**Åpne appen / Open the app:** https://khalm.github.io/What_Bites/
 
 ## Slik virker det / How it works
 1. **Sted og vær** — henter posisjon, vær (temperatur, vind, skydekke, lufttrykk og trend, sol opp/ned) og fiskearter registrert innen ca. 30 km.
