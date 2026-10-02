@@ -1,10 +1,10 @@
 {
-  "id": "/WhatBites/?app=whatbites",
+  "id": "./",
   "name": "WhatBites",
   "short_name": "WhatBites",
   "description": "Point your camera at the water and your bait box — WhatBites tells you which bait to use.",
-  "start_url": "/WhatBites/",
-  "scope": "/WhatBites/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#071a22",
   "theme_color": "#0b2530",
