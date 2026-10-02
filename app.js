@@ -68,6 +68,9 @@ const T = {
     detecting: 'Ser etter agn i bildet…', use: 'Bruk', others: 'Andre i boksen', target: 'Mål', how: 'Slik', size: 'Størrelse',
     noBaits: 'Fant ikke noe agn. Prøv et nærmere og lysere bilde rett ovenfra, med agnet spredt litt utover.',
     fixType: 'Feil type eller farge? Endre det, så regnes valget ut på nytt.',
+    buyTitle: 'Til neste gang', buyIntro: '',
+    buySkitt: 'Søk hos Skittfiske ↗', buyFinn: 'Brukt på Finn.no ↗', shopsNear: 'Fiskebutikker i nærheten', route: 'Veibeskrivelse ↗',
+    shopsLoading: 'Ser etter butikker i nærheten…', noShops: 'Fant ingen fiskebutikker innen 25 km.', wormBuy: 'Fiskemark får du i fiskebutikker og på mange bensinstasjoner.',
     bestColors: 'Beste farger nå', favColors: 'Gode farger', typeLbl: 'Agntype', colorLbl: 'Farge',
     modelFail: 'Kunne ikke laste AI-modellen. Sjekk nettet og prøv igjen.',
     disclaimer: 'Agnvalg er forslag — sjekk lokale fiskeregler og fredningstider.',
@@ -135,6 +138,9 @@ const T = {
     detecting: 'Looking for baits in the photo…', use: 'Use', others: 'Others in the box', target: 'Target', how: 'How', size: 'Size',
     noBaits: "I couldn't find any baits. Try a closer, brighter photo from above, with the baits spread out a bit.",
     fixType: 'Wrong type or colour? Change it and the pick is recalculated.',
+    buyTitle: 'For next time', buyIntro: '',
+    buySkitt: 'Search Skittfiske ↗', buyFinn: 'Used on Finn.no ↗', shopsNear: 'Fishing shops nearby', route: 'Directions ↗',
+    shopsLoading: 'Looking for shops nearby…', noShops: 'No fishing shops found within 25 km.', wormBuy: 'Worms are sold in fishing shops and many petrol stations.',
     bestColors: 'Best colours now', favColors: 'Good colours', typeLbl: 'Bait type', colorLbl: 'Colour',
     modelFail: "Couldn't load the AI model. Check your connection and try again.",
     disclaimer: 'Bait picks are suggestions — check local fishing rules and seasons.',
@@ -633,6 +639,57 @@ const SWATCH = {
 const swatch = (c) => `<span class="swatch" style="background:${SWATCH[c] || '#888'}"></span>`;
 const colorName = (c) => (Engine.COLOR_NAMES[c] || Engine.COLOR_NAMES.natural)[L()];
 
+/* ---------- buy suggestion ---------- */
+function buyBlock(ranked) {
+  const ideal = Engine.idealBait(ranked, state.env, state.weather, state.fish, lang, state.preferred);
+  if (!ideal) return '';
+  const q = Engine.shopQuery(ideal, state.env);
+  const name = `${Engine.TYPE_NAMES[ideal.type][L()]}, ${colorName(ideal.color)}`.toLowerCase();
+  const skitt = `https://www.skittfiske.no/sok?q=${encodeURIComponent(q)}`;
+  const finn = `https://www.finn.no/recommerce/forsale/search?q=${encodeURIComponent(q)}`;
+  // Small and quiet: one line, details only when tapped
+  return `<details class="buy">
+    <summary>💡 ${t('buyTitle')}: <b>${swatch(ideal.color)}${esc(name)}</b></summary>
+    <p class="tiny muted">${esc(ideal.why.join(' · '))}${ideal.size ? ` · ${esc(ideal.size)}` : ''}</p>
+    ${ideal.type === 'worm' ? `<p class="tiny muted">${t('wormBuy')}</p>`
+      : `<p class="tiny"><a href="${skitt}" target="_blank" rel="noopener">${t('buySkitt')}</a> · <a href="${finn}" target="_blank" rel="noopener">${t('buyFinn')}</a></p>`}
+    <div id="shopList">${renderShops()}</div>
+  </details>`;
+}
+
+/* Nearby physical shops from OpenStreetMap */
+const shops = { list: [], loaded: false, loading: false };
+function distKm(a, b, c, d) {
+  const R = 6371, r = Math.PI / 180;
+  const x = Math.sin((c - a) * r / 2) ** 2 + Math.cos(a * r) * Math.cos(c * r) * Math.sin((d - b) * r / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(x));
+}
+async function loadShops() {
+  shops.loading = true;
+  const a = `(around:25000,${state.lat},${state.lon})`;
+  const q = `[out:json][timeout:15];(nwr${a}["shop"="fishing"];nwr${a}["shop"="hunting"];nwr${a}["shop"="outdoor"];nwr${a}["shop"="sports"]["sport"~"fishing"];);out center tags 40;`;
+  try {
+    const d = await overpass(q);
+    const rank = { fishing: 0, hunting: 1, outdoor: 2, sports: 3 };
+    shops.list = (d.elements || []).map((e) => {
+      const la = e.lat ?? e.center?.lat, lo = e.lon ?? e.center?.lon;
+      return { name: e.tags?.name || '', kind: e.tags?.shop, lat: la, lon: lo, km: distKm(state.lat, state.lon, la, lo), web: e.tags?.website || e.tags?.['contact:website'] || '' };
+    }).filter((x) => x.name && x.lat).sort((x, y) => (rank[x.kind] - rank[y.kind]) * 3 + (x.km - y.km)).slice(0, 4)
+      .sort((x, y) => x.km - y.km);
+  } catch { shops.list = []; }
+  shops.loaded = true; shops.loading = false;
+  const el = document.getElementById('shopList'); if (el) el.innerHTML = renderShops();
+}
+function renderShops() {
+  if (state.lat === null) return '';
+  if (!shops.loaded) return `<p class="tiny muted">${t('shopsLoading')}</p>`;
+  if (!shops.list.length) return `<p class="tiny muted">${t('noShops')}</p>`;
+  return `<p class="tiny muted">${t('shopsNear')}:</p><ul class="shops">${shops.list.map((sh) => `<li>
+    <span><b>${esc(sh.name)}</b> <span class="muted">· ${sh.km < 10 ? sh.km.toFixed(1) : Math.round(sh.km)} km</span>
+    ${sh.web ? `<br><a href="${esc(sh.web)}" target="_blank" rel="noopener">${esc(sh.web.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''))}</a>` : ''}</span>
+    <a class="route" href="https://www.google.com/maps/dir/?api=1&destination=${sh.lat},${sh.lon}" target="_blank" rel="noopener">${t('route')}</a></li>`).join('')}</ul>`;
+}
+
 function renderBaitResult() {
   const { img, baits } = state.bait;
   const res = Engine.rank(baits, state.env, state.weather, state.fish, lang, state.preferred);
@@ -658,7 +715,10 @@ function renderBaitResult() {
     <h3>${t('others')}</h3>
     <ul class="baits">${res.baits.map((b) => `<li class="${b === best ? 'best' : ''}">
       <span class="badge">#${b.id}</span>${swatch(b.color)}${typeSelect(b)}${colorSelect(b)}<span class="score">${b.score}</span></li>`).join('')}</ul>
-    <p class="tiny muted">${t('fixType')}</p>`;
+    <p class="tiny muted">${t('fixType')}</p>
+    ${buyBlock(res.baits)}`;
+  const buy = out.querySelector('details.buy');
+  if (buy) buy.addEventListener('toggle', () => { if (buy.open && state.lat !== null && !shops.loaded && !shops.loading) loadShops(); });
   out.querySelectorAll('select').forEach((sel) => sel.onchange = () => {
     const b = state.bait.baits.find((x) => x.id === Number(sel.dataset.id));
     if (!b) return;

@@ -368,6 +368,38 @@
     return tips[type] || '';
   }
 
-  const api = { COLORS, COLOR_FIT, FAV_COLORS, colorFit, bestColors, SIZES, sizeFor, TYPES, TYPE_NAMES, COLOR_NAMES, SPECIES, guessWater, pickTargets, rank };
+  /**
+   * The best bait for these conditions, whether or not it's in the box.
+   * Returns null if the box already has something close to it.
+   */
+  function idealBait(boxRanked, env, wx, fishList, lang = 'no', preferred = []) {
+    let best = null;
+    for (const type of TYPES) {
+      for (const color of COLORS) {
+        if (color === 'glow' && env.light !== 'night' && env.water !== 'sea') continue; // glow is niche
+        const r = rank([{ id: 0, type, color }], env, wx, fishList, lang, preferred);
+        const b = r.baits[0];
+        if (!best || b.score > best.score) best = { ...b, size: r.size, targets: r.targets };
+      }
+    }
+    const top = boxRanked && boxRanked[0];
+    if (top && (top.type === best.type && (top.color === best.color || top.color2 === best.color))) return null;
+    if (top && best.score - top.score < 12 && top.score >= 72) return null;
+    return best;
+  }
+
+  // Norwegian shop search words
+  const SHOP_WORDS = {
+    type: { spoon: 'sluk', spinner: 'spinner', wobbler: 'wobbler', softbait: 'softbait', jig: 'jigg', fly: 'flue', worm: 'markdrag' },
+    color: { silver: 'sølv', gold: 'gull', copper: 'kobber', white: 'hvit', red: 'rød', orange: 'oransje', yellow: 'gul',
+      chartreuse: 'chartreuse', green: 'grønn', blue: 'blå', pink: 'rosa', purple: 'lilla', black: 'svart', natural: '', glow: 'glow' },
+  };
+  function shopQuery(bait, env) {
+    let tw = SHOP_WORDS.type[bait.type];
+    if (bait.type === 'jig' && env.water === 'sea') tw = 'pilk';
+    return [tw, SHOP_WORDS.color[bait.color]].filter(Boolean).join(' ');
+  }
+
+  const api = { idealBait, shopQuery, COLORS, COLOR_FIT, FAV_COLORS, colorFit, bestColors, SIZES, sizeFor, TYPES, TYPE_NAMES, COLOR_NAMES, SPECIES, guessWater, pickTargets, rank };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.Engine = api;
 })(typeof window !== 'undefined' ? window : globalThis);

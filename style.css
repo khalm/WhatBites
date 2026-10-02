@@ -194,3 +194,14 @@ ul.baits select { min-width: 0; flex: 1 1 38%; }
 details.fix { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
 details.fix summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 0; }
 .seg button.mine { box-shadow: inset 0 0 0 2px #fff; }
+
+/* ---------- buy suggestion (quiet, one line) ---------- */
+details.buy { margin-top: 10px; font-size: 13px; color: var(--muted); }
+details.buy summary { cursor: pointer; list-style: none; padding: 4px 0; }
+details.buy summary::-webkit-details-marker { display: none; }
+details.buy summary b { color: var(--text); font-weight: 600; }
+details.buy a { color: var(--accent); }
+details.buy p { margin: 4px 0; }
+ul.shops { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+ul.shops li { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+ul.shops .route { white-space: nowrap; }
