@@ -200,5 +200,80 @@
     return { color, color2 };
   }
 
-  root.Vision = { detectBaits, readEnvironment, colorOf, loadDetector };
+  /* ---------- spot photos ---------- */
+  /** Small RGBA grid of the whole photo for Scene.analyzeGrid */
+  function grid(img, size = 64) {
+    const c = document.createElement('canvas');
+    c.width = size; c.height = size;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(img, 0, 0, size, size);
+    return { data: ctx.getImageData(0, 0, size, size).data, w: size, h: size };
+  }
+
+  // What the AI model looks for in a spot photo
+  const SCENE_LABELS = {
+    sky: ['the sky', 'clouds in the sky'],
+    water: ['water surface', 'a body of water'],
+    lake: ['a calm lake'],
+    river: ['a flowing river', 'a stream with rapids'],
+    sea: ['the sea with waves', 'the ocean coast'],
+  };
+  const unionBox = (ds) => [Math.min(...ds.map((d) => d.box.xmin)), Math.min(...ds.map((d) => d.box.ymin)),
+    Math.max(...ds.map((d) => d.box.xmax)), Math.max(...ds.map((d) => d.box.ymax))].map((v) => Math.min(1, Math.max(0, v)));
+
+  /** Sky box, water box and water-type votes from the AI model (only if it is already downloaded). */
+  async function sceneHints(imageUrl) {
+    const detector = await loadDetector();
+    const labels = Object.values(SCENE_LABELS).flat();
+    const raw = await detector(imageUrl, labels, { threshold: 0.05, percentage: true });
+    const groupOf = {};
+    for (const [g, ls] of Object.entries(SCENE_LABELS)) for (const l of ls) groupOf[l] = g;
+    const by = {};
+    for (const d of raw) (by[groupOf[d.label]] ||= []).push(d);
+    const best = (g, min) => (by[g] || []).filter((d) => d.score >= min);
+    const sky = best('sky', 0.08), water = [...best('water', 0.08), ...best('lake', 0.08), ...best('river', 0.08), ...best('sea', 0.08)];
+    const top = (g) => Math.max(0, ...(by[g] || []).map((d) => d.score));
+    return {
+      skyBox: sky.length ? unionBox(sky) : null,
+      waterBox: water.length ? unionBox(water) : null,
+      typeVotes: { lake: top('lake'), river: top('river'), sea: top('sea') },
+    };
+  }
+
+  /** Read exposure time, f-number and ISO from the photo file (the camera's own light meter). */
+  async function readExif(file) {
+    try {
+      const buf = await file.slice(0, 256 * 1024).arrayBuffer();
+      const v = new DataView(buf);
+      if (v.getUint16(0) !== 0xFFD8) return null;
+      let off = 2;
+      while (off + 4 < v.byteLength) {
+        const marker = v.getUint16(off); const len = v.getUint16(off + 2);
+        if (marker === 0xFFE1 && v.getUint32(off + 4) === 0x45786966) { // "Exif"
+          const t0 = off + 10; const le = v.getUint16(t0) === 0x4949;
+          const u16 = (o) => v.getUint16(t0 + o, le), u32 = (o) => v.getUint32(t0 + o, le);
+          const rat = (o) => { const a = u32(o), b = u32(o + 4); return b ? a / b : null; };
+          const readIfd = (ifd) => {
+            const tags = {}; const n = u16(ifd);
+            for (let i = 0; i < n; i++) {
+              const e = ifd + 2 + i * 12, tag = u16(e), type = u16(e + 2);
+              if (type === 3) tags[tag] = u16(e + 8);
+              else if (type === 4) tags[tag] = u32(e + 8);
+              else if (type === 5 || type === 10) tags[tag] = rat(u32(e + 8));
+            }
+            return tags;
+          };
+          const ifd0 = readIfd(u32(4));
+          const ex = ifd0[0x8769] ? readIfd(ifd0[0x8769]) : {};
+          const res = { t: ex[0x829A] || null, N: ex[0x829D] || null, iso: ex[0x8827] || ex[0x8833] || null };
+          return res.t && res.iso ? res : null;
+        }
+        if ((marker & 0xFF00) !== 0xFF00) break;
+        off += 2 + len;
+      }
+    } catch { /* no EXIF */ }
+    return null;
+  }
+
+  root.Vision = { detectBaits, readEnvironment, colorOf, loadDetector, grid, sceneHints, readExif };
 })(window);

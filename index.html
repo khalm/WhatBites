@@ -12,7 +12,7 @@
   <link rel="manifest" href="manifest.json?v=8">
   <link rel="icon" href="icon.svg?v=8" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icon-192.png?v=8">
-  <link rel="stylesheet" href="style.css?v=12">
+  <link rel="stylesheet" href="style.css?v=13">
 </head>
 <body>
   <div id="splash" aria-hidden="true">
@@ -60,15 +60,24 @@
     <section class="card" id="step2">
       <div class="step-head"><span class="num">2</span><h2 data-i18n="s2title"></h2></div>
       <p class="muted" data-i18n="s2intro"></p>
-      <label class="btn"><span data-i18n="s2btn"></span>
-        <input type="file" accept="image/*" capture="environment" id="envInput" hidden>
-      </label>
-      <img id="envPreview" class="preview hidden" alt="">
-      <p id="darkNote" class="note hidden"></p>
-      <h3 data-i18n="water"></h3><div class="seg" data-group="water"></div>
-      <h3 data-i18n="clarity"></h3><div class="seg" data-group="clarity"></div>
-      <h3 data-i18n="light"></h3><div class="seg" data-group="light"></div>
-      <p class="tiny muted" data-i18n="segHelp"></p>
+      <ul class="checklist" id="checklist"></ul>
+      <div id="spotNotes"></div>
+      <div class="ask" id="spotAsk"></div>
+      <div class="photo-btns">
+        <label class="btn" id="ovBtn"><span data-i18n="ovBtn"></span>
+          <input type="file" accept="image/*" capture="environment" id="ovInput" hidden></label>
+        <label class="btn" id="cuBtn"><span data-i18n="cuBtn"></span>
+          <input type="file" accept="image/*" capture="environment" id="cuInput" hidden></label>
+      </div>
+      <button type="button" class="btn ghost hidden" id="skipSky" data-i18n="skipSky"></button>
+      <div class="thumbs" id="spotThumbs"></div>
+      <details class="fix" id="fixBox">
+        <summary data-i18n="fixHere"></summary>
+        <h3 data-i18n="water"></h3><div class="seg" data-group="water"></div>
+        <h3 data-i18n="clarity"></h3><div class="seg" data-group="clarity"></div>
+        <h3 data-i18n="light"></h3><div class="seg" data-group="light"></div>
+        <p class="tiny muted" data-i18n="segHelp"></p>
+      </details>
     </section>
 
     <section class="card" id="step3">
@@ -99,8 +108,9 @@
     <button class="btn ghost" id="sheetClose" data-i18n="close"></button>
   </dialog>
 
-  <script src="engine.js?v=12"></script>
-  <script src="vision.js?v=12"></script>
-  <script src="app.js?v=12"></script>
+  <script src="engine.js?v=13"></script>
+  <script src="scene.js?v=13"></script>
+  <script src="vision.js?v=13"></script>
+  <script src="app.js?v=13"></script>
 </body>
 </html>

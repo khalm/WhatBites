@@ -7,7 +7,12 @@ Hva biter? Pek kameraet mot vannet og agnboksen din — WhatBites viser hvilket 
 
 ## Slik virker det / How it works
 1. **Sted og vær** — henter posisjon, vær (temperatur, vind, skydekke, lufttrykk og trend, sol opp/ned) og fiskearter registrert innen ca. 30 km.
-2. **Vis vannet** — ta bilde av fiskeplassen; appen leser lys og sikt. Velg innsjø, elv eller sjø.
+2. **Vis vannet** — appen sjekker fire ting og ber om nye bilder til alt er på plass:
+   - ☁️ **Skydekke** — fra himmelen i oversiktsbildet, kryssjekket mot værvarselet
+   - 💡 **Lys** — solhøyde (GPS + klokke), kameraets lysmåler (EXIF) og skydekket
+   - 🌊 **Vanntype** — nærmeste vann på kartet (OpenStreetMap: innsjø, elv eller sjø + navn), kryssjekket mot bildet
+   - 💧 **Sikt** — fra et nærbilde rett ned i vannet (unngår speilinger); mye regn siste døgn tas med
+   Mangler noe, forteller appen hvordan du tar et bedre bilde. Du kan alltid rette selv.
 3. **Vis agnboksen** — ta bilde av boksen; appen markerer det beste agnet i bildet og rangerer resten.
 
 Norsk er standard, trykk **EN/NO** øverst for å bytte språk.
@@ -44,12 +49,14 @@ Reglene står i `COLOR_FIT` og `FAV_COLORS` i `engine.js`. Kilder: [Academy Spor
 - Vær: [Open-Meteo](https://open-meteo.com) (gratis, ingen nøkkel)
 - Fiskearter: [GBIF](https://www.gbif.org) observasjonsdata
 - Stedsnavn: [OpenStreetMap Nominatim](https://nominatim.org)
+- Nærmeste vann: [OpenStreetMap Overpass API](https://overpass-api.de)
 
 ## Teknisk
 Ren HTML/CSS/JavaScript uten byggesteg, hostet på GitHub Pages. Kan redigeres direkte i GitHub på mobilen.
 - `index.html` — sider og layout
 - `app.js` — skjermlogikk og oversettelser (`T`-objektet øverst)
 - `engine.js` — regelmotoren: arter, agntyper og forhold
-- `vision.js` — bildeanalyse på telefonen
+- `vision.js` — bildeanalyse på telefonen (agn, AI-hint, EXIF)
+- `scene.js` — leser fiskeplassen og kryssjekker bilder, vær og kart
 - `style.css` — utseende
 - `sw.js`, `manifest.json` — installerbar app (PWA)

@@ -172,3 +172,25 @@ ul.baits select { min-width: 0; flex: 1 1 38%; }
 .colchip { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px;
   border: 1px solid var(--line); background: #0e2a35; font-size: 13px; }
 .colchip.have { border-color: var(--good); }
+
+/* ---------- step 2 checklist ---------- */
+.checklist { list-style: none; padding: 0; margin: 12px 0 8px; display: grid; gap: 6px; }
+.checklist li { display: grid; grid-template-columns: 22px 24px 1fr; grid-template-rows: auto auto; column-gap: 6px;
+  align-items: start; padding: 8px 10px; border-radius: 10px; background: #0a2029; border: 1px solid var(--line); }
+.checklist .st { grid-row: 1 / span 2; font-weight: 800; text-align: center; }
+.checklist .st.ok { color: var(--good); } .checklist .st.warn { color: var(--accent); } .checklist .st.todo { color: var(--muted); }
+.checklist .ic { grid-row: 1 / span 2; }
+.checklist .lbl { font-size: 13px; color: var(--muted); }
+.checklist .val { grid-column: 3; font-weight: 600; }
+.checklist .val small { display: block; font-weight: 400; font-size: 12px; color: var(--muted); }
+.ask { margin: 10px 0 4px; padding: 10px 12px; border-radius: 10px; border: 1px dashed var(--accent); font-size: 15px; }
+.ask:empty { display: none; }
+.ask.done { border-style: solid; border-color: var(--good); color: var(--good); }
+.photo-btns { display: grid; gap: 0; }
+.thumbs { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+.thumbs figure { margin: 0; position: relative; }
+.thumbs img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); display: block; }
+.thumbs figcaption { position: absolute; bottom: 2px; right: 4px; font-size: 14px; }
+details.fix { margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
+details.fix summary { cursor: pointer; color: var(--muted); font-size: 14px; padding: 4px 0; }
+.seg button.mine { box-shadow: inset 0 0 0 2px #fff; }

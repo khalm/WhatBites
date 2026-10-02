@@ -18,14 +18,43 @@ const T = {
     noFish: 'Fant ingen fiskeregistreringer i nærheten — appen bruker vanlige arter for vanntypen.', noWeather: 'Vær er ikke tilgjengelig akkurat nå.',
     wind: 'Vind', cloud: 'Skydekke', rainNow: 'Nedbør nå', day: '☀️ Dag', night: '🌙 Natt',
     hpa: { rising: 'hPa, stigende', falling: 'hPa, fallende', steady: 'hPa, stabilt' },
-    s2title: 'Vis vannet', s2intro: 'Ta et bilde av plassen du fisker. Appen leser lys og vannfarge — trykk for å rette om det er feil.',
+    s2title: 'Vis vannet', s2intro: 'Appen sjekker skydekke, lys, vanntype og hvor klart vannet er — fra bildene dine, værvarselet og kartet.',
+    ovBtn: '📷 Oversiktsbilde (vann + himmel)', cuBtn: '📷 Nærbilde rett ned i vannet',
+    ck: { sky: 'Skydekke', light: 'Lys', water: 'Vanntype', clarity: 'Sikt i vannet' },
+    skyVals: { clear: 'Klart', partly: 'Delvis skyet', overcast: 'Overskyet', sunset: 'Solnedgang', dark: 'Mørk himmel' },
+    src: { photo: 'bilde', weather: 'værvarsel', gps: 'kart', sun: 'solhøyde', camera: 'kameraets lysmåler', user: 'valgt av deg' },
+    missing: 'mangler', within: { near: 'innen 200 m', km: 'innen 1 km' },
+    ask: {
+      start: 'Ta et oversiktsbilde: stå ved vannet og hold telefonen slik at horisonten er midt i bildet — litt himmel øverst og vann nederst.',
+      noSky: 'Fant ikke himmel i bildet. Vipp telefonen litt opp, så en stripe himmel kommer med øverst.',
+      noWater: 'Fant ikke vann i bildet. Pek kameraet mot vannflaten, ikke bare land eller trær.',
+      needCloseup: 'Nå et nærbilde: hold telefonen rett ned mot vannet ved kanten, ca. en halv meter over, så appen ser hvor klart vannet er.',
+      reflection: 'Vannet speiler himmelen, så fargen kan ikke leses. Ta et nærbilde rett ned i vannet — skygg gjerne med kroppen.',
+      closeupUnsure: 'Litt usikkert. Prøv et nytt nærbilde rett ned der det er grunt, uten sol-gjenskinn.',
+      closeupNoWater: 'Det så ikke ut som vann. Hold kameraet rett ned mot vannflaten.',
+      tooDark: 'For mørkt til å lese bildet. Velg sikt (og vanntype) selv under, eller lys på vannet med lommelykt.',
+      askUser: 'Klarte ikke å avgjøre sikten fra bildene. Velg selv under.',
+    },
+    pickWater: 'Fant ikke sikkert hvilket vann du er ved. Velg vanntype under.',
+    pickClarity: 'Velg sikt i vannet under.',
+    skipSky: 'Hopp over himmelbildet — bruk værvarselet',
+    allDone: '✓ Alt er sjekket! Gå videre til agnboksen.',
+    analyzing: 'Leser bildet…', fixHere: 'Rett selv om noe er feil',
+    locFirst: 'Tips: trykk «Bruk min posisjon» i steg 1, så kan appen sjekke værvarselet og hvilket vann du er ved.',
+    notes: {
+      skyConflictPhoto: 'Bildet viser et annet skydekke enn værvarselet — appen stoler på bildet.',
+      skyConflictWeather: 'Bildet og værvarselet er uenige om skydekket — appen bruker værvarselet.',
+      waterConflict: 'Bildet ser ut som en annen vanntype enn kartet viser. Sjekk at vanntypen stemmer.',
+      lightDarker: 'Kameraet målte mindre lys enn ventet (skygge eller mørke skyer) — appen bruker det.',
+      heavyRain: 'Mye regn siste døgn — vannet kan være mer farget enn vanlig.',
+    },
     s2btn: '📷 Ta bilde av plassen', water: 'Vanntype', clarity: 'Sikt i vannet', light: 'Lys',
     opts: {
       water: { lake: 'Innsjø', river: 'Elv', sea: 'Sjø' },
       clarity: { clear: 'Klart', stained: 'Litt farget', murky: 'Grumsete' },
       light: { sun: 'Sol', overcast: 'Overskyet', low: 'Skumring', night: 'Natt' },
     },
-    segHelp: 'Bildet og været fyller inn dette automatisk. Du kan alltid endre selv.',
+    segHelp: 'Det du velger her overstyrer bildene og værvarselet. Trykk på valgt knapp igjen for å la appen bestemme.',
     tooDark: 'Det er for mørkt til å lese bildet. Velg lys, vanntype og sikt selv under.',
     darkNow: 'Det er mørkt nå, så bildet kan ikke leses. Velg vanntype og sikt selv.',
     s3title: 'Vis agnboksen', s3intro: 'Åpne boksen og ta bilde rett ovenfra i godt lys (bruk lommelykt om det er mørkt).', s3btn: '🎣 Ta bilde av agnboksen',
@@ -56,14 +85,43 @@ const T = {
     noFish: 'No fish records nearby — the app uses common species for the water type.', noWeather: 'Weather unavailable right now.',
     wind: 'Wind', cloud: 'Cloud cover', rainNow: 'Rain now', day: '☀️ Day', night: '🌙 Night',
     hpa: { rising: 'hPa, rising', falling: 'hPa, falling', steady: 'hPa, steady' },
-    s2title: 'Show the water', s2intro: "Take a photo of your spot. The app reads the light and water colour — tap to correct it if it's wrong.",
+    s2title: 'Show the water', s2intro: 'The app checks cloud cover, light, water type and water clarity — from your photos, the weather forecast and the map.',
+    ovBtn: '📷 Overview photo (water + sky)', cuBtn: '📷 Close-up straight down into the water',
+    ck: { sky: 'Cloud cover', light: 'Light', water: 'Water type', clarity: 'Water clarity' },
+    skyVals: { clear: 'Clear', partly: 'Partly cloudy', overcast: 'Overcast', sunset: 'Sunset', dark: 'Dark sky' },
+    src: { photo: 'photo', weather: 'forecast', gps: 'map', sun: 'sun height', camera: "camera's light meter", user: 'chosen by you' },
+    missing: 'missing', within: { near: 'within 200 m', km: 'within 1 km' },
+    ask: {
+      start: 'Take an overview photo: stand by the water and hold the phone so the horizon is in the middle — some sky at the top, water at the bottom.',
+      noSky: "Couldn't find sky in the photo. Tilt the phone up a little so a strip of sky is included at the top.",
+      noWater: "Couldn't find water in the photo. Point the camera at the water surface, not just land or trees.",
+      needCloseup: 'Now a close-up: hold the phone straight down over the water at the edge, about half a metre above, so the app can see how clear it is.',
+      reflection: 'The water is mirroring the sky, so its colour can\'t be read. Take a close-up straight down — shade it with your body if you can.',
+      closeupUnsure: 'Not quite sure. Try another close-up straight down where it is shallow, without sun glare.',
+      closeupNoWater: "That didn't look like water. Hold the camera straight down at the water surface.",
+      tooDark: 'Too dark to read the photo. Choose clarity (and water type) yourself below, or shine a torch on the water.',
+      askUser: "Couldn't decide the clarity from the photos. Please choose below.",
+    },
+    pickWater: "Couldn't tell for sure which water you are at. Choose the water type below.",
+    pickClarity: 'Choose the water clarity below.',
+    skipSky: 'Skip the sky photo — use the forecast',
+    allDone: '✓ Everything checked! Move on to your bait box.',
+    analyzing: 'Reading the photo…', fixHere: 'Correct it yourself if something is wrong',
+    locFirst: 'Tip: tap "Use my location" in step 1 so the app can check the forecast and which water you are at.',
+    notes: {
+      skyConflictPhoto: 'The photo shows different cloud cover than the forecast — the app trusts the photo.',
+      skyConflictWeather: 'The photo and the forecast disagree on cloud cover — the app uses the forecast.',
+      waterConflict: 'The photo looks like a different water type than the map shows. Check the water type is right.',
+      lightDarker: 'The camera measured less light than expected (shade or dark clouds) — the app uses that.',
+      heavyRain: 'Lots of rain in the last 24 hours — the water may be more coloured than usual.',
+    },
     s2btn: '📷 Photograph the spot', water: 'Water type', clarity: 'Water clarity', light: 'Light',
     opts: {
       water: { lake: 'Lake', river: 'River', sea: 'Sea' },
       clarity: { clear: 'Clear', stained: 'Stained', murky: 'Murky' },
       light: { sun: 'Sunny', overcast: 'Overcast', low: 'Dusk', night: 'Night' },
     },
-    segHelp: 'The photo and weather fill this in automatically. You can always change it.',
+    segHelp: 'What you choose here overrides the photos and forecast. Tap a selected button again to let the app decide.',
     tooDark: 'Too dark to read the photo. Choose light, water type and clarity yourself below.',
     darkNow: "It's dark now, so a photo can't be read. Choose water type and clarity yourself.",
     s3title: 'Show your bait box', s3intro: 'Open your tackle box and photograph it from above in good light (use a torch if dark).', s3btn: '🎣 Photograph bait box',
@@ -92,7 +150,7 @@ const L = () => (lang === 'no' ? 0 : 1);
 const state = {
   lat: null, lon: null, place: '', weather: null, fish: [],
   env: { water: 'lake', clarity: 'stained', light: 'overcast' },
-  envSetByUser: {}, envFromPhoto: false,
+  envSetByUser: {},
   bait: null, // { img, baits:[{id,type,color,box}] }
   // Species the user is fishing for in this session (cleared when the app/tab is closed)
   preferred: JSON.parse(sessionStorage.getItem('wb_pref') || '[]'),
@@ -108,7 +166,7 @@ function applyLang() {
   $('modelNote').textContent = modelOk() ? t('modelReady') : t('modelNote');
   renderBanner();
   if (state.lat !== null) { $('locBtn').textContent = t('refreshLoc'); renderConditions(); loadWikiNames(); }
-  renderSegs(); renderDarkNote();
+  renderSegs(); renderSpot();
   if (state.bait) renderBaitResult();
 }
 $('langBtn').onclick = () => { lang = lang === 'no' ? 'en' : 'no'; localStorage.setItem('wb_ui', lang); applyLang(); };
@@ -284,19 +342,20 @@ $('locBtn').onclick = () => {
 async function loadConditions(lat, lon) {
   state.lat = lat; state.lon = lon;
   $('condStatus').textContent = t('loading');
-  const [w, f, p] = await Promise.allSettled([loadWeather(lat, lon), loadFish(lat, lon), loadPlace(lat, lon)]);
+  spot.gpsLoading = true;
+  const [w, f, p, g] = await Promise.allSettled([loadWeather(lat, lon), loadFish(lat, lon), loadPlace(lat, lon), loadNearbyWater(lat, lon)]);
   state.weather = w.status === 'fulfilled' ? w.value : null;
   state.fish = f.status === 'fulfilled' ? f.value : [];
   state.place = p.status === 'fulfilled' ? p.value : `${lat.toFixed(3)}, ${lon.toFixed(3)}`;
-  // Fill in conditions the user hasn't set themselves
-  const guessW = Engine.guessWater(state.fish);
-  if (guessW && !state.envSetByUser.water) state.env.water = guessW;
-  if (state.weather && !state.envSetByUser.light && !state.envFromPhoto) {
-    const wx = state.weather;
-    state.env.light = !wx.isDay ? 'night' : wx.cloud > 70 ? 'overcast' : 'sun';
+  spot.gps = g.status === 'fulfilled' ? g.value : null;
+  spot.gpsLoading = false;
+  // No water found on the map: weak hint from which fish live nearby
+  if (!spot.gps) {
+    const guessW = Engine.guessWater(state.fish);
+    if (guessW) spot.gps = { type: guessW, name: '', types: [guessW], ambiguous: true, tier: 'species' };
   }
   $('locBtn').textContent = t('refreshLoc');
-  renderConditions(); renderSegs(); renderDarkNote(); rerank();
+  renderConditions(); updateSpot();
   loadWikiNames();
 }
 
@@ -304,13 +363,14 @@ async function loadWeather(lat, lon) {
   const url = 'https://api.open-meteo.com/v1/forecast?' + new URLSearchParams({
     latitude: lat, longitude: lon, timezone: 'auto', wind_speed_unit: 'ms',
     current: 'temperature_2m,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m,surface_pressure,precipitation,is_day',
-    hourly: 'surface_pressure', past_hours: 6, forecast_hours: 1,
+    hourly: 'surface_pressure,precipitation', past_hours: 24, forecast_hours: 1,
     daily: 'sunrise,sunset', forecast_days: 1,
   });
   const d = await getJSON(url);
   const c = d.current;
   const p = d.hourly?.surface_pressure || [];
-  const trend = p.length > 1 ? p[p.length - 1] - p[0] : 0;
+  const trend = p.length > 6 ? p[p.length - 1] - p[p.length - 7] : 0;           // last 6 hours
+  const rain24 = (d.hourly?.precipitation || []).slice(0, 24).reduce((a, b) => a + (b || 0), 0);
   return {
     temp: c.temperature_2m, code: c.weather_code, cloud: c.cloud_cover,
     wind: c.wind_speed_10m, windDeg: c.wind_direction_10m,
@@ -319,6 +379,7 @@ async function loadWeather(lat, lon) {
     rain: c.precipitation, isDay: !!c.is_day,
     sunrise: d.daily?.sunrise?.[0]?.slice(11), sunset: d.daily?.sunset?.[0]?.slice(11),
     monthIndex: new Date().getMonth(),
+    rain24,
   };
 }
 
@@ -389,46 +450,133 @@ $('fishList').addEventListener('click', (e) => {
   const chip = e.target.closest('button.chip'); if (chip) openSheet(chip.dataset.sci);
 });
 
-/* ---------- step 2: environment ---------- */
+/* ---------- step 2: the spot (photos + forecast + map) ---------- */
+const spot = { photos: [], thumbs: [], ev: null, skipSky: false, gps: null, gpsLoading: false, decision: null };
+
+/* Nearest water from OpenStreetMap (free Overpass API, two servers) */
+const OVERPASS = ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'];
+async function overpass(q) {
+  for (const url of OVERPASS) {
+    try {
+      const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 12000);
+      const r = await fetch(url, { method: 'POST', body: 'data=' + encodeURIComponent(q),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, signal: ctl.signal });
+      clearTimeout(to);
+      if (r.ok) return await r.json();
+    } catch { /* try next server */ }
+  }
+  throw new Error('overpass unavailable');
+}
+async function loadNearbyWater(lat, lon) {
+  const a = (r) => `(around:${r},${lat},${lon})`;
+  const q = (r) => `[out:json][timeout:12];(way${a(r)}["natural"="water"];relation${a(r)}["natural"="water"];`
+    + `way${a(r)}["waterway"~"^(river|stream|canal)$"];way${a(r)}["natural"="coastline"];`
+    + `way${a(r)}["natural"~"^(bay|strait)$"];relation${a(r)}["natural"~"^(bay|strait)$"];);out tags 40;`;
+  for (const [r, tier] of [[200, 'near'], [1000, 'km']]) {
+    const d = await overpass(q(r));
+    const c = Scene.classifyOsm(d.elements);
+    if (c) return { ...c, tier };
+  }
+  return null;
+}
+
+function userOverrides() {
+  const u = {};
+  for (const k of ['water', 'clarity', 'light']) if (state.envSetByUser[k]) u[k] = state.env[k];
+  return u;
+}
+
+function updateSpot() {
+  const sunElev = state.lat !== null ? Scene.sunElevation(state.lat, state.lon) : null;
+  const d = Scene.decide({
+    photos: spot.photos, user: userOverrides(), skipSky: spot.skipSky, gps: spot.gps,
+    weather: state.weather ? { cloud: state.weather.cloud, rain24: state.weather.rain24 } : null,
+    sunElev, ev: spot.ev,
+  });
+  spot.decision = d;
+  for (const k of ['water', 'clarity', 'light']) if (!state.envSetByUser[k]) state.env[k] = d.env[k];
+  renderSpot(); renderSegs(); rerank();
+}
+
+function renderSpot() {
+  const d = spot.decision;
+  if (!d) return;
+  const val = {
+    sky: (v) => t('skyVals')[v] || '',
+    light: (v) => t('opts').light[v] || '',
+    water: (v) => t('opts').water[v] || '',
+    clarity: (v) => t('opts').clarity[v] || '',
+  };
+  const icons = { sky: '☁️', light: '💡', water: '🌊', clarity: '💧' };
+  $('checklist').innerHTML = ['sky', 'light', 'water', 'clarity'].map((k) => {
+    const it = d.items[k];
+    const src = [...new Set(it.src)].map((s2) => t('src')[s2]).filter(Boolean).join(' + ');
+    const status = it.conflict ? '<span class="st warn">⚠</span>' : it.ok ? '<span class="st ok">✓</span>' : '<span class="st todo">•</span>';
+    return `<li>${status}<span class="ic">${icons[k]}</span><span class="lbl">${t('ck')[k]}</span>
+      <span class="val">${it.value ? esc(val[k](it.value)) + (k === 'water' && it.name ? ' · ' + esc(it.name) : '') : `<span class="muted">${t('missing')}</span>`}
+      ${k === 'water' && it.src.includes('gps') && t('within')[spot.gps?.tier] ? `<span class="muted"> (${t('within')[spot.gps.tier]})</span>` : ''}
+      ${src ? `<small>${esc(src)}</small>` : ''}</span></li>`;
+  }).join('');
+
+  $('spotNotes').innerHTML = d.notes.map((n) => `<p class="note">${esc(t('notes')[n] || '')}</p>`).join('')
+    + (state.lat === null ? `<p class="note">${esc(t('locFirst'))}</p>` : '');
+
+  // What to do next
+  const ask = $('spotAsk');
+  let msg = '';
+  if (d.next) msg = t('ask')[d.reason] || t('ask').start;
+  else if (d.reason === 'tooDark' || d.reason === 'askUser') msg = t('ask')[d.reason];
+  if (!msg && d.needPick.water) msg = t('pickWater');
+  if (!msg && d.needPick.clarity) msg = t('pickClarity');
+  if (!msg && d.done) msg = t('allDone');
+  ask.textContent = msg;
+  ask.className = 'ask' + (d.done && !d.next ? ' done' : '');
+  $('ovBtn').classList.toggle('primary', d.next === 'overview');
+  $('cuBtn').classList.toggle('primary', d.next === 'closeup');
+  $('skipSky').classList.toggle('hidden', !(d.next === 'overview' && !d.items.sky.ok && state.weather && spot.photos.length > 0));
+  if (d.needPick.water || d.needPick.clarity) $('fixBox').open = true;
+  $('spotThumbs').innerHTML = spot.thumbs.map((th) =>
+    `<figure><img src="${th.src}" alt=""><figcaption>${th.mode === 'overview' ? '🏞️' : '💧'}</figcaption></figure>`).join('');
+}
+
 function renderSegs() {
   document.querySelectorAll('.seg').forEach((seg) => {
     const g = seg.dataset.group;
     seg.innerHTML = Object.entries(t('opts')[g]).map(([k, label]) =>
-      `<button type="button" data-v="${k}" class="${state.env[g] === k ? 'on' : ''}">${esc(label)}</button>`).join('');
+      `<button type="button" data-v="${k}" class="${state.env[g] === k ? 'on' : ''}${state.envSetByUser[g] && state.env[g] === k ? ' mine' : ''}">${esc(label)}</button>`).join('');
   });
 }
 document.querySelectorAll('.seg').forEach((seg) => seg.addEventListener('click', (e) => {
   const v = e.target.dataset?.v; if (!v) return;
-  state.env[seg.dataset.group] = v;
-  state.envSetByUser[seg.dataset.group] = true;
-  renderSegs(); rerank();
+  const g = seg.dataset.group;
+  // Tap your own choice again → let the app decide
+  if (state.envSetByUser[g] && state.env[g] === v) delete state.envSetByUser[g];
+  else { state.env[g] = v; state.envSetByUser[g] = true; }
+  updateSpot();
 }));
+$('skipSky').onclick = () => { spot.skipSky = true; updateSpot(); };
 
-let photoTooDark = false;
-function renderDarkNote() {
-  const dark = photoTooDark || (state.weather && !state.weather.isDay);
-  $('darkNote').classList.toggle('hidden', !dark);
-  $('darkNote').textContent = photoTooDark ? t('tooDark') : t('darkNow');
-}
-
-$('envInput').onchange = async (e) => {
-  const file = e.target.files[0]; if (!file) return;
+async function handleSpotPhoto(file, mode) {
+  if (state.lat === null) $('locBtn').click(); // get forecast + map in the background
+  busy(true, t('analyzing'));
   try {
     const img = await loadImage(file);
-    $('envPreview').src = img.src; $('envPreview').classList.remove('hidden');
-    const r = Vision.readEnvironment(img);
-    photoTooDark = r.tooDark;
-    if (r.tooDark) {
-      // Too dark to read anything reliable: keep the user's / weather's choices, only nudge light
-      if (!state.envSetByUser.light && !['night', 'low'].includes(state.env.light)) state.env.light = 'night';
-    } else {
-      if (!state.envSetByUser.light) state.env.light = state.weather && !state.weather.isDay ? 'night' : r.light;
-      if (!state.envSetByUser.clarity) state.env.clarity = r.clarity;
-      state.envFromPhoto = true;
+    const exif = await Vision.readExif(file);
+    const ev = Scene.evFromExif(exif);
+    if (ev != null) spot.ev = ev;
+    let hints = {};
+    if (mode === 'overview' && modelOk()) {
+      try { hints = await Vision.sceneHints(scaledUrl(img, 768)); } catch (err) { console.warn('scene hints failed', err); }
     }
-    renderSegs(); renderDarkNote(); rerank();
-  } finally { e.target.value = ''; }
-};
+    const res = Scene.analyzeGrid(Vision.grid(img), mode, hints);
+    spot.photos.push(res);
+    spot.thumbs.push({ src: img.src, mode });
+    updateSpot();
+    $('step2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } finally { busy(false); }
+}
+$('ovInput').onchange = (e) => { const f = e.target.files[0]; if (f) handleSpotPhoto(f, 'overview'); e.target.value = ''; };
+$('cuInput').onchange = (e) => { const f = e.target.files[0]; if (f) handleSpotPhoto(f, 'closeup'); e.target.value = ''; };
 
 /* ---------- image utils ---------- */
 async function loadImage(file) {
@@ -554,4 +702,5 @@ function drawBaits(img, baits, best) {
 /* ---------- start ---------- */
 loadWikiCacheFromStorage();
 applyLang();
+updateSpot();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
